@@ -1,17 +1,18 @@
 import java.util.List;
 
 public class Cliente {
-	protected String nome, endereco, educacao, genero, classeEconomica;
+	protected String nome, endereco;
 	protected List<Veiculo> veiculos;
 
-	public Cliente(String nome, String endereco, String educacao, String genero, String classeEconomica,
+	public Cliente(String nome, String endereco,
 			List<Veiculo> veiculos) {
 		this.nome = nome;
 		this.endereco = endereco;
-		this.educacao = educacao;
-		this.genero = genero;
-		this.classeEconomica = classeEconomica;
 		this.veiculos = veiculos;
+	}
+
+	public String mkString(String prefixo, String sep, String sufixo) {
+		return prefixo + "Nome: " + nome + sep + "Endereco: " + endereco + sep + "Veiculos: " + veiculos + sufixo;
 	}
 
 	public String getNome() {
@@ -30,30 +31,6 @@ public class Cliente {
 		this.endereco = endereco;
 	}
 
-	public String getEducacao() {
-		return educacao;
-	}
-
-	public void setEducacao(String educacao) {
-		this.educacao = educacao;
-	}
-
-	public String getGenero() {
-		return genero;
-	}
-
-	public void setGenero(String genero) {
-		this.genero = genero;
-	}
-
-	public String getClasseEconomica() {
-		return classeEconomica;
-	}
-
-	public void setClasseEconomica(String classeEconomica) {
-		this.classeEconomica = classeEconomica;
-	}
-
 	public List<Veiculo> getVeiculos() {
 		return veiculos;
 	}
@@ -64,7 +41,6 @@ public class Cliente {
 
 	@Override
 	public String toString() {
-		return "Cliente [nome=" + nome + ", endereco=" + endereco + ", educacao=" + educacao + ", genero=" + genero
-				+ ", classeEconomica=" + classeEconomica + ", veiculos=" + veiculos + "]";
+		return "Cliente [nome=" + nome + ", endereco=" + endereco + ", educacao=" + ", veiculos=" + veiculos + "]";
 	}
 }

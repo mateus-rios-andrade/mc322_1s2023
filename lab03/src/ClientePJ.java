@@ -4,24 +4,24 @@ import java.util.List;
 public class ClientePJ extends Cliente {
 	private final String cnpj;
 	private Date dataFundacao;
-	private static final int[] multiplicadores = {9, 8, 7, 6, 5, 4, 3, 2, 9, 8, 7, 6, 5};
+	private static final int[] multiplicadores = {6,5,4,3,2,9,8,7,6,5,4,3,2};
 
 	public static boolean validarCNPJ(String cnpj) {
 		var digitos = cnpjToArray(cnpj);
 		if (digitos == null) return false;
-		int primeiroDigito = getDV(digitos, 12);
+		int primeiroDigito = getDV(digitos, 1);
 		if (primeiroDigito != digitos[12]) return false;
-		int segundoDigito = getDV(digitos, 13);
+		int segundoDigito = getDV(digitos, 0);
 		if (segundoDigito != digitos[13]) return false;
 		return true;
 	}
 
 	private static int getDV(int[] digitos, int m) {
 		int soma = 0;
-		for (int i = 0; i < m; i++) {
-			soma += multiplicadores[i] * digitos[i];
+		for (int i = 0; i < 13 - m; i++) {
+			soma += multiplicadores[i + m] * digitos[i];
 		}
-		int dv = soma % 11;
+		int dv = 11 - (soma % 11);
 		return dv == 10 ? 0 : dv;
 	}
 
@@ -38,11 +38,14 @@ public class ClientePJ extends Cliente {
 	}
 
 
-	public ClientePJ(String nome, String endereco, String educacao, String genero, String classeEconomica,
-			List<Veiculo> veiculos, String cnpj, Date dataFundacao) {
-		super(nome, endereco, educacao, genero, classeEconomica, veiculos);
+	public ClientePJ(String nome, String endereco, List<Veiculo> veiculos, String cnpj, Date dataFundacao) {
+		super(nome, endereco, veiculos);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
+	}
+
+	public String mkString(String prefixo, String sep, String sufixo) {
+		return super.mkString(prefixo, sep, "") + sep + "CNPJ: " + cnpj + sep + "Data de fundação: " + dataFundacao + sufixo;
 	}
 
 	public String getCnpj() {
@@ -59,8 +62,7 @@ public class ClientePJ extends Cliente {
 
 	@Override
 	public String toString() {
-		return "ClientePJ [nome=" + nome + ", endereco=" + endereco + ", educacao=" + educacao + ", genero=" + genero
-				+ ", classeEconomica=" + classeEconomica + ", veiculos=" + veiculos + ", cnpj=" + cnpj
+		return "ClientePJ [nome=" + nome + ", endereco=" + endereco + ", educacao=" + ", veiculos=" + veiculos + ", cnpj=" + cnpj
 				+ ", dataFundacao=" + dataFundacao + "]";
 	}
 }

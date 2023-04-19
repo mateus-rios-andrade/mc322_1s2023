@@ -99,4 +99,9 @@ public class Seguradora {
 		this.endereco = endereco;
 	}
 
+	@Override
+	public String toString() {
+		return "Seguradora [nome=" + nome + ", telefone=" + telefone + ", email=" + email + ", endereco=" + endereco
+				+ "]";
+	}
 }

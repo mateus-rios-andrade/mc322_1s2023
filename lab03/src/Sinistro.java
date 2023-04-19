@@ -58,9 +58,13 @@ public class Sinistro {
 		this.cliente = cliente;
 	}
 
+	public String mkString(String prefixo, String sep, String sufixo) {
+		return prefixo + "ID: " + id + sep + "Data: " + data + sep + "Endereço: " + endereco + sep + "Seguradora: " + seguradora
+		+ sep + "Veículo: " + veiculo + sep + "Cliente: " + cliente + sufixo;
+	}
+
 	@Override
 	public String toString() {
-		return "Sinistro [id=" + id + ", data=" + data + ", endereco=" + endereco + ", seguradora=" + seguradora
-				+ ", veiculo=" + veiculo + ", cliente=" + cliente + "]";
+		return mkString("Sinistro(\n\t", ",\n\t", "\n)");
 	}
 }
