@@ -65,4 +65,21 @@ public class ClientePJ extends Cliente {
 		return "ClientePJ [nome=" + nome + ", endereco=" + endereco + ", educacao=" + ", veiculos=" + veiculos + ", cnpj=" + cnpj
 				+ ", dataFundacao=" + dataFundacao + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		return cnpj.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientePJ other = (ClientePJ) obj;
+		return other != null && cnpj.equals(other.cnpj);
+	}
 }

@@ -111,4 +111,21 @@ public class ClientePF extends Cliente {
 				+ ", classeEconomica=" + classeEconomica + ", veiculos=" + veiculos + ", cpf=" + cpf
 				+ ", dataNascimento=" + dataNascimento + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		return cpf.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientePF other = (ClientePF) obj;
+		return other != null && cpf.equals(other.cpf);
+	}
 }
