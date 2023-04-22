@@ -124,6 +124,7 @@ public class Main {
 					break;
 				case "sinistros":
 					sinistros(sc, seguradora);
+					break;
 				case "voltar":
 					break loop;
 				default:
@@ -146,6 +147,7 @@ public class Main {
 					break;
 				case "pj":
 					listar(seguradora, "PJ", 1);
+					break;
 				case "todos":
 					System.out.println("Clientes PF:");
 					listar(seguradora, "PF", 1);
@@ -232,7 +234,7 @@ public class Main {
 			return;
 		}
 		Veiculo veiculo = null;
-		while (veiculo != null) {
+		while (veiculo == null) {
 			String placa = getString(sc, "Placa do veículo involvido: ");
 			for (var v : cliente.getVeiculos()) {
 				if (v.getPlaca().equals(placa)) {
@@ -252,7 +254,7 @@ public class Main {
 		}
 		mostrarClientes(seguradora);
 		var cliente = getCliente(sc, seguradora);
-
+		seguradora.visualizarSinistro(cliente);
 	}
 
 	private static List<Veiculo> getVeiculos(Scanner sc) {
