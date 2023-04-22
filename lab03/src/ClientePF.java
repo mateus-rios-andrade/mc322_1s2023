@@ -57,6 +57,11 @@ public class ClientePF extends Cliente {
 	}
 
 	@Override
+	public String getID() {
+		return cpf;
+	}
+
+	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {
 		return super.mkString(prefixo, sep, "") + sep + "Educacao: " + educacao + sep + "Gênero: " + genero + sep + "Classe econômica: " 
 		+ classeEconomica + sep + "CPF: " + cpf + sep + "Data de Nascimento: " + dataNascimento + sep + "Data da Licença: " + dataLicenca + sufixo;

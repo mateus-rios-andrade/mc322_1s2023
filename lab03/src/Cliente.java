@@ -11,8 +11,25 @@ public class Cliente {
 		this.veiculos = veiculos;
 	}
 
+	public String getID() {
+		return null;
+	}
+
+	private static String formatarVeiculos(List<Veiculo> veiculos, String sep) {
+		String str = "[";
+		boolean primeiro = true;
+		for (Veiculo veiculo : veiculos) {
+			if (!primeiro) {
+				str += sep;
+			}
+			str += veiculo;
+			primeiro = false;
+		}
+		return str + "]";
+	}
+
 	public String mkString(String prefixo, String sep, String sufixo) {
-		return prefixo + "Nome: " + nome + sep + "Endereco: " + endereco + sep + "Veiculos: " + veiculos + sufixo;
+		return prefixo + "Nome: " + nome + sep + "Endereco: " + endereco + sep + "Veiculos: " + formatarVeiculos(veiculos, sep) + sufixo;
 	}
 
 	public String getNome() {

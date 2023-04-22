@@ -44,6 +44,11 @@ public class ClientePJ extends Cliente {
 		this.dataFundacao = dataFundacao;
 	}
 
+	@Override
+	public String getID() {
+		return cnpj;
+	}
+
 	public String mkString(String prefixo, String sep, String sufixo) {
 		return super.mkString(prefixo, sep, "") + sep + "CNPJ: " + cnpj + sep + "Data de fundação: " + dataFundacao + sufixo;
 	}

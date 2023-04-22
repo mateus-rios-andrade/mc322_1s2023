@@ -22,6 +22,10 @@ public class Seguradora {
 		clientes = new ArrayList<>();
 	}
 
+	public int nClientes() {
+		return clientes.size();
+	}
+
 	public boolean cadastrarCliente(Cliente cliente) {
 		if (clientes.contains(cliente))
 			return false;
@@ -31,6 +35,10 @@ public class Seguradora {
 
 	public boolean removerCliente(String nomeCliente) {
 		return clientes.removeIf(cliente -> cliente.nome == nomeCliente);
+	}
+	
+	public boolean removerCliente(Cliente cliente) {
+		return clientes.remove(cliente);
 	}
 
 	public List<Cliente> listarClientes(String tipoCliente) {
@@ -65,6 +73,14 @@ public class Seguradora {
 			}
 		}
 		return r;
+	}
+
+	public void visualizarSinistro(Cliente cliente) {
+		sinistros.stream().filter(sinistro -> sinistro.getCliente() == cliente).forEach(System.out::println);
+	}
+
+	public List<Cliente> getClientes() {
+		return clientes;
 	}
 
 	public String getNome() {
