@@ -1,3 +1,4 @@
+package seguradora;
 public class Veiculo {
 
 	private String placa, marca, modelo;

@@ -1,3 +1,4 @@
+package seguradora;
 public class Sinistro {
 	private final int id;
 	private String data, endereco;

@@ -1,3 +1,4 @@
+package seguradora;
 import java.util.List;
 
 public sealed abstract class Cliente permits ClientePF, ClientePJ {

@@ -1,10 +1,12 @@
+package seguradora;
 public enum MenuListar {
     CLIENTES_SEG(1),
     SINISTROS_SEG(2),
     SINISTROS_CLIENTE(3),
     VEICULOS_CLIENTES(4),
     VEICULOS_SEG(5),
-    VOLTAR(6);
+    VOLTAR(6),
+	INVALIDO(-1);
 
     final int index;
 
@@ -16,7 +18,7 @@ public enum MenuListar {
 			case 4 -> VEICULOS_CLIENTES;
 			case 5 -> VEICULOS_SEG;
 			case 6 -> VOLTAR;
-			default -> null;
+			default -> INVALIDO;
 		};
 	}
 

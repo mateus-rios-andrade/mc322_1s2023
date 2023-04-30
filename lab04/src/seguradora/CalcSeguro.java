@@ -1,3 +1,4 @@
+package seguradora;
 public enum CalcSeguro {
 	VALOR_BASE(100.0),
 	FATOR_18_30(1.2),

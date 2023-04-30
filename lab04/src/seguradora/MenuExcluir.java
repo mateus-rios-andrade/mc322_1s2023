@@ -1,8 +1,10 @@
+package seguradora;
 public enum MenuExcluir {
 	CLIENTE(1),
 	VEICULO(2),
 	SINISTRO(3),
-	VOLTAR(4);
+	VOLTAR(4),
+	INVALIDO(-1);
 
 	final int index;
 
@@ -12,7 +14,7 @@ public enum MenuExcluir {
 			case 2 -> VEICULO;
 			case 3 -> SINISTRO;
 			case 4 -> VOLTAR;
-			default -> null;
+			default -> INVALIDO;
 		};
 	}
 

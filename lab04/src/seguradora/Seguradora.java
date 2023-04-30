@@ -1,3 +1,4 @@
+package seguradora;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,7 +90,7 @@ public class Seguradora {
 	}
 
 	public void visualizarSinistro(Cliente cliente) {
-		sinistros.stream().filter(sinistro -> sinistro.getCliente() == cliente).forEach(System.out::println);
+		sinistros.stream().filter(sinistro -> sinistro.getCliente().equals(cliente)).forEach(System.out::println);
 	}
 
 	public List<Cliente> getClientes() {
