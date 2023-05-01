@@ -1,6 +1,16 @@
 package seguradora;
 
+import java.util.regex.Pattern;
+
 public class Validacao {
+	/**
+	 * Esse método supõe que 'letra' significa qualquer caractere considerado como tal pelo
+	 * grupo '\w' do regex e que um único espaço é permitido entre os caracteres.
+	 */
+	public static boolean validarNome(String nome) {
+		return Pattern.compile("^\\w( \\w|\\w)*$", Pattern.UNICODE_CHARACTER_CLASS).matcher(nome).matches();
+	}
+
 	public static boolean validarCPF(String cpf) {
 		var digitos = cpfToArray(cpf);
 		if (digitos == null)

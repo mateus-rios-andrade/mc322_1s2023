@@ -1,7 +1,7 @@
 package seguradora;
 import java.util.List;
 
-public sealed abstract class Cliente permits ClientePF, ClientePJ {
+public sealed abstract class Cliente implements MkString permits ClientePF, ClientePJ {
 	protected String nome, endereco;
 	protected List<Veiculo> veiculos;
 
@@ -29,6 +29,7 @@ public sealed abstract class Cliente permits ClientePF, ClientePJ {
 		return str + "]";
 	}
 
+	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {
 		return prefixo + "Nome: " + nome + sep + "Endereco: " + endereco + sep + "Veiculos: " + formatarVeiculos(veiculos, sep) + sufixo;
 	}

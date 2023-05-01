@@ -1,4 +1,5 @@
 package seguradora;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -9,11 +10,9 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 public class Utils {
-	
+
 	public static List<Veiculo> getVeiculos(Scanner sc) {
-		System.out.print("Quantos veículos o cliente possui? ");
-		int nVeiculos = sc.nextInt();
-		sc.nextLine();
+		int nVeiculos = getInt(sc, "Veículos a registrar");
 		var veiculos = new ArrayList<Veiculo>();
 		for (int i = 1; i <= nVeiculos; i++) {
 			System.out.println("Veiculo " + i + " :");
@@ -54,8 +53,12 @@ public class Utils {
 		} while (voltar);
 		return ret;
 	}
- 
+
 	public static Seguradora getSeguradora(Scanner sc, Map<String, Seguradora> seguradoras) {
+		if (seguradoras.size() == 0) {
+			System.out.println("Não há seguradoras registradas.");
+			return null;
+		}
 		Seguradora seguradora;
 		while (true) {
 			String nomeSeg = getString(sc, "Seguradora: ");
@@ -82,7 +85,47 @@ public class Utils {
 		return id;
 	}
 
+	public static Cliente criarCliente(Scanner sc) {
+		String nome = getString(sc, "Nome: ");
+		String endereco = getString(sc, "Endereço: ");
+		String tipo;
+		while (true) {
+			tipo = getString(sc, "Tipo: ").toUpperCase();
+			if (!tipo.equals("PF") && !tipo.equals("PJ")) {
+				System.out.println("Tipo inválido.");
+			} else {
+				break;
+			}
+		}
+		return switch (tipo) {
+			case "PF" ->
+				new ClientePF(
+						nome,
+						endereco,
+						new ArrayList<>(),
+						getString(sc, "Edudação: "),
+						getString(sc, "Gênero: "),
+						getString(sc, "Classe econômica: "),
+						getID(sc, "CPF: ", Validacao::validarCPF),
+						getDate(sc, "Data de Nascimento: "),
+						getDate(sc, "Data de Licença: "));
+			case "PJ" ->
+				new ClientePJ(
+						nome,
+						endereco,
+						new ArrayList<>(),
+						getID(sc, "CNPJ: ", Validacao::validarCNPJ),
+						getDate(sc, "Data de Fundação: "),
+						getInt(sc, "Quantidade de funcionários: "));
+			default -> null;
+		};
+	}
+
 	public static Cliente getCliente(Scanner sc, Seguradora seguradora) {
+		if (seguradora.getClientes().isEmpty()) {
+			System.out.println("Não há clientes registrados nessa seguradora.");
+			return null;
+		}
 		while (true) {
 			String id = getString(sc, "CPF/CNPJ do cliente: ");
 			for (var c : seguradora.getClientes()) {
@@ -94,7 +137,6 @@ public class Utils {
 		}
 	}
 
-
 	public static void mostrarClientes(Seguradora seguradora) {
 		System.out.println("Clientes registrados:");
 		for (var cliente : seguradora.getClientes()) {
@@ -102,11 +144,30 @@ public class Utils {
 		}
 	}
 
-	public static int listar(Seguradora seguradora, String tipo, int inicio) {
-		int i = inicio;
-		for (var cliente : seguradora.listarClientes(tipo)) {
-			System.out.println(cliente.mkString("Cliente " + i++ + ":\n\t", "\n\t", "\n"));
+	public static int getItem(Scanner sc, Iterable<? extends MkString> iter, String nome) {
+		if (!iter.iterator().hasNext()) {
+			return -1;
+		}
+		int i = 0;
+		for (MkString x : iter) {
+			System.out.println(i++ + " - " + x.mkString("", ", ", ""));
+		}
+		int ret;
+		while (true) {
+			ret = getInt(sc, "Índice do " + nome + ": ");
+			if (ret < 0 || ret > i) {
+				System.out.println("Índice inválido.");
+			} else {
+				break;
+			}
 		}
 		return i;
+	}
+
+	public static void printIter(Iterable<? extends MkString> iter, String nome) {
+		int i = 0;
+		for (MkString x : iter) {
+			System.out.println(x.mkString(nome + i++ + ":\n\t ", ",\n\t", "\n"));
+		}
 	}
 }

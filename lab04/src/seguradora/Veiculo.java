@@ -1,5 +1,6 @@
 package seguradora;
-public class Veiculo {
+
+public class Veiculo implements MkString {
 
 	private String placa, marca, modelo;
 	private int anoFabricacao;
@@ -47,5 +48,11 @@ public class Veiculo {
 	public String toString() {
 		return "Veiculo [placa=" + placa + ", marca=" + marca + ", modelo=" + modelo + ", anoFabricacao="
 				+ anoFabricacao + "]";
+	}
+
+	@Override
+	public String mkString(String prefixo, String sep, String sufixo) {
+		return prefixo + "Placa: " + placa + sep + "Marca: " + marca + sep + "Modelo: " + modelo + sep
+				+ "Ano de fabricação" + anoFabricacao + sufixo;
 	}
 }

@@ -2,7 +2,6 @@ package seguradora;
 
 import static seguradora.Utils.*;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -23,8 +22,8 @@ public enum MenuCadastrar {
 			MenuCadastrar op = getOpcao(getInt(sc, ""));
 			switch (op) {
 				case CLIENTE -> cliente(sc, seguradoras);
-				case VEICULO -> throw new UnsupportedOperationException("Unimplemented case: " + op);
-				case SEGURADORA -> throw new UnsupportedOperationException("Unimplemented case: " + op);
+				case VEICULO -> veiculo(sc, seguradoras);
+				case SEGURADORA -> seguradora(sc, seguradoras);
 				case VOLTAR -> ficar = false;
 				default -> System.out.println("Comando inválido.");
 			}
@@ -32,45 +31,33 @@ public enum MenuCadastrar {
 	}
 
 	private static void cliente(Scanner sc, Map<String, Seguradora> seguradoras) {
-		if (seguradoras.size() == 0) {
-			System.out.println("Não há seguradoras registradas.");
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
 			return;
 		}
+		seg.cadastrarCliente(criarCliente(sc));
+	}
+
+	private static void veiculo(Scanner sc, Map<String, Seguradora> seguradoras) {
 		Seguradora seg = getSeguradora(sc, seguradoras);
-		String nome = getString(sc, "Nome: ");
-		String endereco = getString(sc, "Endereço: ");
-		String tipo;
-		while (true) {
-			tipo = getString(sc, "Tipo: ").toUpperCase();
-			if (!tipo.equals("PF") && !tipo.equals("PJ")) {
-				System.out.println("Tipo inválido.");
-			} else {
-				break;
-			}
+		if (seg == null) {
+			return;
 		}
-		Cliente cliente = switch (tipo) {
-			case "PF" ->
-				new ClientePF(
-						nome,
-						endereco,
-						new ArrayList<>(),
-						getString(sc, "Edudação: "),
-						getString(sc, "Gênero: "),
-						getString(sc, "Classe econômica: "),
-						getID(sc, "CPF: ", Validacao::validarCPF),
-						getDate(sc, "Data de Nascimento: "),
-						getDate(sc, "Data de Licença: "));
-			case "PJ" ->
-				new ClientePJ(
-						nome,
-						endereco,
-						new ArrayList<>(),
-						getID(sc, "CNPJ: ", Validacao::validarCNPJ),
-						getDate(sc, "Data de Fundação: "),
-						getInt(sc, "Quantidade de funcionários: "));
-			default -> null;
-		};
-		seg.cadastrarCliente(cliente);
+		Cliente cliente = getCliente(sc, seg);
+		if (cliente == null) {
+			return;
+		}
+		var veiculos = getVeiculos(sc);
+		cliente.getVeiculos().addAll(veiculos);
+	}
+
+	private static void seguradora(Scanner sc, Map<String, Seguradora> seguradoras) {
+		String nome = getString(sc, "Nome: ");
+		seguradoras.put(nome, new Seguradora(
+				nome,
+				getString(sc, "Telefone: "),
+				getString(sc, "Email: "),
+				getString(sc, "Endereço: ")));
 	}
 
 	public static MenuCadastrar getOpcao(int index) {

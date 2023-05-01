@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class ClientePF extends Cliente {
 	private String educacao, genero, classeEconomica;
-    private final String cpf;
+	private final String cpf;
 	private LocalDate dataNascimento, dataLicenca;
 
 	public ClientePF(String nome, String endereco, List<Veiculo> veiculos, String educacao, String genero,
@@ -59,28 +59,28 @@ public final class ClientePF extends Cliente {
 		this.dataNascimento = dataNascimento;
 	}
 	public String getEducacao() {
-        return educacao;
-    }
+		return educacao;
+	}
 
-    public void setEducacao(String educacao) {
-        this.educacao = educacao;
-    }
+	public void setEducacao(String educacao) {
+		this.educacao = educacao;
+	}
 
-    public String getGenero() {
-        return genero;
-    }
+	public String getGenero() {
+		return genero;
+	}
 
-    public void setGenero(String genero) {
-        this.genero = genero;
-    }
+	public void setGenero(String genero) {
+		this.genero = genero;
+	}
 
-    public String getClasseEconomica() {
-        return classeEconomica;
-    }
+	public String getClasseEconomica() {
+		return classeEconomica;
+	}
 
-    public void setClasseEconomica(String classeEconomica) {
-        this.classeEconomica = classeEconomica;
-    }
+	public void setClasseEconomica(String classeEconomica) {
+		this.classeEconomica = classeEconomica;
+	}
 
 	@Override
 	public String toString() {

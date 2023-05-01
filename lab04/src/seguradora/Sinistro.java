@@ -1,12 +1,16 @@
 package seguradora;
-public class Sinistro {
+
+import java.time.LocalDate;
+
+public class Sinistro implements MkString {
 	private final int id;
-	private String data, endereco;
+	private LocalDate data;
+	private String endereco;
 	private Seguradora seguradora;
 	private Veiculo veiculo;
 	private Cliente cliente;
 
-	public Sinistro(int id, String data, String endereco, Seguradora seguradora, Veiculo veiculo, Cliente cliente) {
+	public Sinistro(int id, LocalDate data, String endereco, Seguradora seguradora, Veiculo veiculo, Cliente cliente) {
 		this.id = id;
 		this.data = data;
 		this.endereco = endereco;
@@ -19,11 +23,11 @@ public class Sinistro {
 		return id;
 	}
 
-	public String getData() {
+	public LocalDate getData() {
 		return data;
 	}
 
-	public void setData(String data) {
+	public void setData(LocalDate data) {
 		this.data = data;
 	}
 

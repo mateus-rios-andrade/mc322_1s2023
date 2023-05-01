@@ -1,7 +1,7 @@
 package seguradora;
-import java.time.Instant;
+
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -50,9 +50,17 @@ public class Seguradora {
 	public boolean removerCliente(String nomeCliente) {
 		return clientes.removeIf(cliente -> cliente.nome == nomeCliente);
 	}
-	
+
 	public boolean removerCliente(Cliente cliente) {
+		sinistros.removeIf(s -> s.getCliente().equals(cliente));
 		return clientes.remove(cliente);
+	}
+
+	public void trocarCliente(Cliente clienteAntigo, Cliente clienteNovo) {
+		clientes.remove(clienteAntigo);
+		clientes.add(clienteNovo);
+		sinistros.stream().filter(s -> s.getCliente().equals(clienteAntigo))
+				.forEach(s -> s.setCliente(clienteNovo));
 	}
 
 	public List<Cliente> listarClientes(String tipoCliente) {
@@ -70,9 +78,9 @@ public class Seguradora {
 		return sinistros;
 	}
 
-	public boolean gerarSinistro(String endereco, Veiculo veiculo, Cliente cliente) {
+	public boolean gerarSinistro(LocalDate data, String endereco, Veiculo veiculo, Cliente cliente) {
 		if (clientes.contains(cliente)) {
-			var sinistro = new Sinistro(genId(), Date.from(Instant.now()).toString(), endereco, this, veiculo, cliente);
+			var sinistro = new Sinistro(genId(), data, endereco, this, veiculo, cliente);
 			return sinistros.add(sinistro);
 		}
 		return false;
@@ -95,6 +103,10 @@ public class Seguradora {
 
 	public List<Cliente> getClientes() {
 		return clientes;
+	}
+
+	public List<Sinistro> getSinistros() {
+		return sinistros;
 	}
 
 	public String getNome() {
