@@ -85,7 +85,7 @@ public enum MenuOperacao {
 		if (seg == null) {
 			return;
 		}
-		System.out.printf("%.2f\n", seg.calcularReceita());
+		System.out.printf("R$ %.2f\n", seg.calcularReceita());
 	}
 
 	public static MenuOperacao getOpcao(int index) {

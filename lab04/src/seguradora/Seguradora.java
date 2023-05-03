@@ -41,10 +41,14 @@ public class Seguradora {
 	}
 
 	public boolean cadastrarCliente(Cliente cliente) {
+		if (!Validacao.validarNome(cliente.getNome()) ||cliente instanceof ClientePF c && (c.getIdade() < 18 || c.getIdade() > 90)) {
+			System.out.println("Cliente com dados inválidos.");
+			return false;
+		}
+		
 		if (clientes.contains(cliente))
 			return false;
-		clientes.add(cliente);
-		return true;
+		return clientes.add(cliente);
 	}
 
 	public boolean removerCliente(String nomeCliente) {

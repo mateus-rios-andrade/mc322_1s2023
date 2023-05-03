@@ -20,7 +20,7 @@ public final class ClientePF extends Cliente {
 	}
 
 	public int getIdade() {
-		return Period.between(LocalDate.now(), dataNascimento).normalized().getYears();
+		return Period.between(dataNascimento, LocalDate.now()).normalized().getYears();
 	}
 
 	@Override

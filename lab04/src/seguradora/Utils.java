@@ -161,7 +161,7 @@ public class Utils {
 				break;
 			}
 		}
-		return i;
+		return ret;
 	}
 
 	public static void printIter(Iterable<? extends MkString> iter, String nome) {
