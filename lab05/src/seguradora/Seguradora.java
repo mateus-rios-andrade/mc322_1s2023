@@ -1,14 +1,17 @@
 package seguradora;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class Seguradora {
 	private String nome, telefone, email, endereco;
-	private List<Sinistro> sinistros;
-	private List<Cliente> clientes;
+	private final List<Sinistro> sinistros;
+	private final List<Cliente> clientes;
+	private final List<Seguro> seguros;
+
 	private static int proxId = 0;
 
 	private static int genId() {
@@ -22,6 +25,7 @@ public class Seguradora {
 		this.endereco = endereco;
 		sinistros = new ArrayList<>();
 		clientes = new ArrayList<>();
+		seguros = new ArrayList<>();
 	}
 
 	private Stream<Sinistro> sinistrosDe(Cliente cliente) {
@@ -41,11 +45,12 @@ public class Seguradora {
 	}
 
 	public boolean cadastrarCliente(Cliente cliente) {
-		if (!Validacao.validarNome(cliente.getNome()) ||cliente instanceof ClientePF c && (c.getIdade() < 18 || c.getIdade() > 90)) {
+		if (!Validacao.validarNome(cliente.getNome())
+				|| cliente instanceof ClientePF c && (c.getIdade() < 18 || c.getIdade() > 90)) {
 			System.out.println("Cliente com dados inválidos.");
 			return false;
 		}
-		
+
 		if (clientes.contains(cliente))
 			return false;
 		return clientes.add(cliente);
@@ -83,11 +88,34 @@ public class Seguradora {
 	}
 
 	public boolean gerarSinistro(LocalDate data, String endereco, Veiculo veiculo, Cliente cliente) {
-		if (clientes.contains(cliente)) {
-			var sinistro = new Sinistro(genId(), data, endereco, this, veiculo, cliente);
-			return sinistros.add(sinistro);
-		}
 		return false;
+	}
+
+	public boolean gerarSeguro(ClientePF cliente, Veiculo veiculo, List<Condutor> condutores, LocalDate dataInicio,
+			LocalDate dataFim) {
+		return seguros.add(new SeguroPF(
+				genId(),
+				dataInicio,
+				dataFim,
+				this,
+				Collections.emptyList(),
+				condutores,
+				cliente,
+				veiculo,
+				cliente.getVeiculos().size()));
+	}
+
+	public boolean gerarSeguro(ClientePJ cliente, Frota frota, List<Condutor> condutores, LocalDate dataInicio,
+			LocalDate dataFim) {
+		return seguros.add(new SeguroPJ(
+				genId(),
+				dataInicio,
+				dataFim,
+				this,
+				Collections.emptyList(),
+				condutores,
+				cliente,
+				frota));
 	}
 
 	public boolean visualizarSinistro(String nomeCliente) {
@@ -105,12 +133,27 @@ public class Seguradora {
 		sinistros.stream().filter(sinistro -> sinistro.getCliente().equals(cliente)).forEach(System.out::println);
 	}
 
+	public List<Seguro> getSegurosPorCliente(Cliente cliente) {
+		return seguros.stream().filter(s -> s.getCliente().equals(cliente)).toList();
+	}
+
+	public List<Sinistro> getSinistrosPorCliente(Cliente cliente) {
+		return seguros.stream()
+				.filter(s -> s.getCliente().equals(cliente))
+				.flatMap(s -> s.getSinistros().stream())
+				.toList();
+	}
+
 	public List<Cliente> getClientes() {
 		return clientes;
 	}
 
 	public List<Sinistro> getSinistros() {
 		return sinistros;
+	}
+
+	public List<Seguro> getSeguros() {
+		return seguros;
 	}
 
 	public String getNome() {

@@ -9,17 +9,16 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 	private Seguradora seguradora;
 	private List<Sinistro> sinistros;
 	private List<Condutor> condutores;
-	private int valorMensal;
+	private double valorMensal;
 
 	public Seguro(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, List<Sinistro> sinistros,
-			List<Condutor> condutores, int valorMensal) {
+			List<Condutor> condutores) {
 		this.id = id;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.seguradora = seguradora;
 		this.sinistros = sinistros;
 		this.condutores = condutores;
-		this.valorMensal = valorMensal;
 	}
 
 	public boolean desautorizarCondutor(Condutor condutor) {
@@ -28,6 +27,10 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 
 	public boolean autorizarCondutor(Condutor condutor) {
 		return condutores.add(condutor);
+	}
+
+	public int getQtdSinistrosCondutor() {
+		return getCondutores().stream().mapToInt(c -> c.getSinistros().size()).sum();
 	}
 
 	public abstract double calcularValor();
@@ -70,11 +73,11 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 		return condutores;
 	}
 
-	public int getValorMensal() {
+	public double getValorMensal() {
 		return valorMensal;
 	}
 
-	public void setValorMensal(int valorMensal) {
+	public void setValorMensal(double valorMensal) {
 		this.valorMensal = valorMensal;
 	}
 }

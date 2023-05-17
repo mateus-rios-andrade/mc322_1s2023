@@ -6,18 +6,23 @@ import java.util.List;
 public final class SeguroPF extends Seguro {
 	private ClientePF cliente;
 	private Veiculo veiculo;
-
+	private int qtdVeiculosAnteriores;
 	public SeguroPF(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, List<Sinistro> sinistros,
-			List<Condutor> condutores, int valorMensal, ClientePF cliente, Veiculo veiculo) {
-		super(id, dataInicio, dataFim, seguradora, sinistros, condutores, valorMensal);
+			List<Condutor> condutores, ClientePF cliente, Veiculo veiculo, int qtdVeiculosAnteriores) {
+		super(id, dataInicio, dataFim, seguradora, sinistros, condutores);
 		this.cliente = cliente;
 		this.veiculo = veiculo;
+		this.qtdVeiculosAnteriores = qtdVeiculosAnteriores;
+		setValorMensal(calcularValor());
 	}
 
 	@Override
 	public double calcularValor() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'calcularValor'");
+		return CalcSeguro.VALOR_BASE.getValor()
+				* CalcSeguro.deIdade(cliente.getIdade()).getValor()
+				* (1 + 1 / (qtdVeiculosAnteriores + 2))
+				* (2 + getSeguradora().getSinistrosPorCliente(cliente).size() / 10)
+				* (5 + getQtdSinistrosCondutor() / 10);
 	}
 
 	@Override
@@ -27,6 +32,7 @@ public final class SeguroPF extends Seguro {
 
 	public void setCliente(ClientePF cliente) {
 		this.cliente = cliente;
+		setValorMensal(calcularValor());
 	}
 
 	public Veiculo getVeiculo() {
@@ -35,6 +41,15 @@ public final class SeguroPF extends Seguro {
 
 	public void setVeiculo(Veiculo veiculo) {
 		this.veiculo = veiculo;
+		setValorMensal(calcularValor());
 	}
 
+	public int getQtdVeiculosAnteriores() {
+		return qtdVeiculosAnteriores;
+	}
+
+	public void setQtdVeiculosAnteriores(int qtdVeiculosAnteriores) {
+		this.qtdVeiculosAnteriores = qtdVeiculosAnteriores;
+		setValorMensal(calcularValor());
+	}
 }
