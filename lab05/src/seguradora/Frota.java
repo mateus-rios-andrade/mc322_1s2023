@@ -2,13 +2,18 @@ package seguradora;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Frota {
-	private String code;
+	private final String code;
 	private List<Veiculo> veiculos = new ArrayList<>();
 
-	public Frota(String code, Iterable<Veiculo> veiculos) {
-		this.code = code;
+	private static String genCode() {
+		return UUID.randomUUID().toString();
+	}
+
+	public Frota(Iterable<Veiculo> veiculos) {
+		code = genCode();
 		if (veiculos != null) {
 			for (Veiculo veiculo : veiculos) {
 				this.veiculos.add(veiculo);
@@ -28,12 +33,13 @@ public class Frota {
 		return code;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public List<Veiculo> getVeiculos() {
 		return veiculos;
+	}
+
+	@Override
+	public String toString() {
+		return "Frota [code=" + code + ", Nº veículos=" + veiculos.size() + "]";
 	}
 
 }

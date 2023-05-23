@@ -1,22 +1,34 @@
 package seguradora;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class ClientePF extends Cliente {
 	private String educacao, genero, classeEconomica;
 	private final String cpf;
 	private LocalDate dataNascimento, dataLicenca;
+	private List<Veiculo> veiculos = new ArrayList<>();
 
-	public ClientePF(String nome, String endereco, List<Veiculo> veiculos, String educacao, String genero,
+	public ClientePF(String nome, String endereco, Collection<Veiculo> veiculos, String educacao, String genero,
 			String classeEconomica, String cpf, LocalDate dataNascimento, LocalDate dataLicenca) {
-		super(nome, endereco, veiculos);
+		super(nome, endereco);
 		this.educacao = educacao;
 		this.genero = genero;
 		this.classeEconomica = classeEconomica;
 		this.cpf = cpf;
 		this.dataNascimento = dataNascimento;
 		this.dataLicenca = dataLicenca;
+		this.veiculos.addAll(veiculos);
+	}
+
+	public boolean cadastrarVeiculo(Veiculo veiculo) {
+		return veiculos.add(veiculo);
+	}
+
+	public boolean removerVeiculo(Veiculo veiculo) {
+		return veiculos.remove(veiculo);
 	}
 
 	public int getIdade() {
@@ -29,14 +41,13 @@ public final class ClientePF extends Cliente {
 	}
 
 	@Override
-	public double calcularScore() {
-		return CalcSeguro.VALOR_BASE.getValor() * CalcSeguro.deIdade(getIdade()).getValor() * veiculos.size();
-	}
-
-	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {
 		return super.mkString(prefixo, sep, "") + sep + "Educacao: " + educacao + sep + "Gênero: " + genero + sep + "Classe econômica: " 
 		+ classeEconomica + sep + "CPF: " + cpf + sep + "Data de Nascimento: " + dataNascimento + sep + "Data da Licença: " + dataLicenca + sufixo;
+	}
+
+	public List<Veiculo> getVeiculos() {
+		return veiculos;
 	}
 
 	public LocalDate getDataLicenca() {
@@ -84,9 +95,7 @@ public final class ClientePF extends Cliente {
 
 	@Override
 	public String toString() {
-		return "ClientePF [nome=" + nome + ", endereco=" + endereco + ", educacao=" + educacao + ", genero=" + genero
-				+ ", classeEconomica=" + classeEconomica + ", veiculos=" + veiculos + ", cpf=" + cpf
-				+ ", dataNascimento=" + dataNascimento + "]";
+		return "ClientePF [nome=" + nome + ", cpf=" + cpf + ", idade=" + getIdade() + "]";
 	}
 
 	@Override

@@ -21,16 +21,20 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 		this.condutores = condutores;
 	}
 
-	public boolean desautorizarCondutor(Condutor condutor) {
-		return condutores.remove(condutor);
+	public boolean autorizarCondutor(Condutor condutor) {
+		boolean r = condutores.add(condutor);
+		setValorMensal(calcularValor());
+		return r;
 	}
 
-	public boolean autorizarCondutor(Condutor condutor) {
-		return condutores.add(condutor);
+	public boolean desautorizarCondutor(Condutor condutor) {
+		boolean r = condutores.remove(condutor);
+		setValorMensal(calcularValor());
+		return r;
 	}
 
 	public int getQtdSinistrosCondutor() {
-		return getCondutores().stream().mapToInt(c -> c.getSinistros().size()).sum();
+		return condutores.stream().mapToInt(c -> c.getSinistros().size()).sum();
 	}
 
 	public abstract double calcularValor();
@@ -77,7 +81,13 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 		return valorMensal;
 	}
 
-	public void setValorMensal(double valorMensal) {
+	protected void setValorMensal(double valorMensal) {
 		this.valorMensal = valorMensal;
+	}
+
+	@Override
+	public String toString() {
+		return "Seguro [id=" + id + ", dataInicio=" + dataInicio + ", dataFim=" + dataFim + ", seguradora=" + seguradora.getNome()
+				+ ", nº sinistros=" + sinistros + ", condutores=" + condutores + ", valorMensal=" + valorMensal + "]";
 	}
 }

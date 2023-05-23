@@ -1,4 +1,5 @@
 package seguradora;
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
@@ -6,21 +7,38 @@ public final class ClientePJ extends Cliente {
 	private final String cnpj;
 	private LocalDate dataFundacao;
 	private int qtdFuncionarios;
-	
-	public ClientePJ(String nome, String endereco, List<Veiculo> veiculos, String cnpj, LocalDate dataFundacao, int qtdFuncionarios) {
-		super(nome, endereco, veiculos);
+	private List<Frota> frotas = new ArrayList<>();
+
+	public ClientePJ(String nome, String endereco, List<Frota> frotas, String cnpj, LocalDate dataFundacao, int qtdFuncionarios) {
+		super(nome, endereco);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
+		this.frotas.addAll(frotas);
+	}
+
+	public List<Veiculo> getVeiculosPorFrota(String code) {
+		for (Frota frota : frotas) {
+			if (frota.getCode().equals(code)) {
+				return frota.getVeiculos();
+			}
+		}
+		return null;
+	}
+
+	public boolean cadastrarFrota(Frota frota) {
+		if (frotas.contains(frota)) {
+			return frotas.add(frota);
+		}
+		return false;
+	}
+
+	public boolean removerFrota(Frota frota) {
+		return frotas.remove(frota);
 	}
 
 	@Override
 	public String getID() {
 		return cnpj;
-	}
-
-	@Override
-	public double calcularScore() {
-		return CalcSeguro.VALOR_BASE.getValor() * (1 + qtdFuncionarios/100) * veiculos.size();
 	}
 
 	public String mkString(String prefixo, String sep, String sufixo) {
@@ -29,6 +47,10 @@ public final class ClientePJ extends Cliente {
 
 	public String getCnpj() {
 		return cnpj;
+	}
+	
+	public List<Frota> getFrotas() {
+		return frotas;
 	}
 
 	public LocalDate getDataFundacao() {
@@ -49,8 +71,7 @@ public final class ClientePJ extends Cliente {
 
 	@Override
 	public String toString() {
-		return "ClientePJ [nome=" + nome + ", endereco=" + endereco + ", educacao=" + ", veiculos=" + veiculos + ", cnpj=" + cnpj
-				+ ", dataFundacao=" + dataFundacao + "]";
+		return "ClientePJ [nome=" + nome + ", cnpj=" + cnpj + ", Nº funcionários=" + qtdFuncionarios +  "]";
 	}
 
 	@Override

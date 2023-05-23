@@ -52,4 +52,12 @@ public final class SeguroPF extends Seguro {
 		this.qtdVeiculosAnteriores = qtdVeiculosAnteriores;
 		setValorMensal(calcularValor());
 	}
+
+	@Override
+	public String toString() {
+		return "SeguroPF [cliente=" + cliente.getID() + ", veiculo=" + veiculo.getPlaca() + ", qtdVeiculosAnteriores="
+				+ qtdVeiculosAnteriores + "]";
+	}
+
+	
 }

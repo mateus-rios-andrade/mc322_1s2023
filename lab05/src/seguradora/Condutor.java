@@ -71,4 +71,9 @@ public class Condutor {
 	public List<Sinistro> getSinistros() {
 		return sinistros;
 	}
+
+	@Override
+	public String toString() {
+		return "Condutor(Nome:" + nome + ", CPF:" + cpf + ", Nº sinistros: " + sinistros.size() + ")";
+	}
 }
