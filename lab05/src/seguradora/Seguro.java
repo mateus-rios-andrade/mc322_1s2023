@@ -1,24 +1,26 @@
 package seguradora;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 	private final int id;
 	private LocalDate dataInicio, dataFim;
 	private Seguradora seguradora;
-	private List<Sinistro> sinistros;
-	private List<Condutor> condutores;
+	private List<Sinistro> sinistros = new ArrayList<>();
+	private List<Condutor> condutores = new ArrayList<>();
 	private double valorMensal;
 
-	public Seguro(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, List<Sinistro> sinistros,
-			List<Condutor> condutores) {
+	public Seguro(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, Collection<Sinistro> sinistros,
+			Collection<Condutor> condutores) {
 		this.id = id;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.seguradora = seguradora;
-		this.sinistros = sinistros;
-		this.condutores = condutores;
+		this.sinistros.addAll(sinistros);
+		this.condutores.addAll(condutores);
 	}
 
 	public boolean autorizarCondutor(Condutor condutor) {

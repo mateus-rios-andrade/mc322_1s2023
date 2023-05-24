@@ -5,6 +5,104 @@ import static seguradora.Utils.*;
 import java.util.Map;
 import java.util.Scanner;
 
+public sealed interface MenuCadastrar
+	permits 
+	MenuCadastrar.Cadastrar,
+	MenuCadastrar.Veiculo,
+	MenuCadastrar.Seguradora,
+	MenuCadastrar.Condutor,
+	MenuCadastrar.Voltar {
+	public int codigo();
+	
+	public void acao(Scanner sc, Map<String, Seguradora> seguradoras);
+
+	public final class Cadastrar implements MenuCadastrar {
+		private final int codigo = 2;
+
+		private Cadastrar() {
+		}
+
+		@Override
+		public int codigo() {
+			return codigo;
+		}
+
+		@Override
+		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
+
+		}
+	}
+
+	public final class Veiculo implements MenuCadastrar {
+		private final int codigo = 2;
+
+		private Veiculo() {
+		}
+
+		@Override
+		public int codigo() {
+			return codigo;
+		}
+
+		@Override
+		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
+
+		}
+	}
+
+	public final class Seguradora implements MenuCadastrar {
+		private final int codigo = 2;
+
+		private Seguradora() {
+		}
+
+		@Override
+		public int codigo() {
+			return codigo;
+		}
+
+		@Override
+		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
+
+		}
+	}
+
+	public final class Condutor implements MenuCadastrar {
+		private final int codigo = 2;
+
+		private Condutor() {
+		}
+
+		@Override
+		public int codigo() {
+			return codigo;
+		}
+
+		@Override
+		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
+
+		}
+	}
+
+	public final class Voltar implements MenuCadastrar {
+		private final int codigo = 2;
+
+		private Voltar() {
+		}
+
+		@Override
+		public int codigo() {
+			return codigo;
+		}
+
+		@Override
+		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
+
+		}
+	}
+
+}
+/*
 public enum MenuCadastrar {
 	CLIENTE(1),
 	VEICULO(2),
@@ -80,3 +178,4 @@ public enum MenuCadastrar {
 		return index;
 	}
 }
+*/

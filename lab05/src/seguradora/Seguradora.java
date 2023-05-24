@@ -55,11 +55,11 @@ public class Seguradora {
 	}
 
 	public void trocarCliente(Cliente clienteAntigo, Cliente clienteNovo) {
-	// 	clientes.remove(clienteAntigo);
-	// 	clientes.add(clienteNovo);
-	// 	sinistros.stream()
-	// 			.filter(s -> s.getCliente().equals(clienteAntigo))
-	// 			.forEach(s -> s.setCliente(clienteNovo));
+		// clientes.remove(clienteAntigo);
+		// clientes.add(clienteNovo);
+		// sinistros.stream()
+		// .filter(s -> s.getCliente().equals(clienteAntigo))
+		// .forEach(s -> s.setCliente(clienteNovo));
 	}
 
 	public List<Cliente> listarClientes(Cliente.Tipo tipoCliente) {
@@ -85,8 +85,7 @@ public class Seguradora {
 				Collections.emptyList(),
 				condutores,
 				cliente,
-				veiculo,
-				cliente.getVeiculos().size()));
+				veiculo));
 	}
 
 	public boolean gerarSeguro(ClientePJ cliente, Frota frota, List<Condutor> condutores, LocalDate dataInicio,
@@ -104,8 +103,8 @@ public class Seguradora {
 
 	public void visualizarSinistro(Cliente cliente) {
 		// sinistros.stream()
-		// 		.filter(sinistro -> sinistro.getCliente().equals(cliente))
-		// 		.forEach(System.out::println);
+		// .filter(sinistro -> sinistro.getCliente().equals(cliente))
+		// .forEach(System.out::println);
 	}
 
 	public List<Seguro> getSegurosPorCliente(Cliente cliente) {
@@ -115,9 +114,9 @@ public class Seguradora {
 	public List<Sinistro> getSinistrosPorCliente(Cliente cliente) {
 		// var sinistros = new ArrayList<Sinistro>();
 		// for (var seguro : seguros) {
-		// 	if (seguro.getCliente().equals(cliente)) {
-		// 		sinistros.addAll(seguro.getSinistros());
-		// 	}
+		// if (seguro.getCliente().equals(cliente)) {
+		// sinistros.addAll(seguro.getSinistros());
+		// }
 		// }
 		// return sinistros;
 		return seguros.stream()

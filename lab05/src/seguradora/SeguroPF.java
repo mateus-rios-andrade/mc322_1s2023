@@ -6,21 +6,22 @@ import java.util.List;
 public final class SeguroPF extends Seguro {
 	private ClientePF cliente;
 	private Veiculo veiculo;
-	private int qtdVeiculosAnteriores;
 	public SeguroPF(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, List<Sinistro> sinistros,
-			List<Condutor> condutores, ClientePF cliente, Veiculo veiculo, int qtdVeiculosAnteriores) {
+			List<Condutor> condutores, ClientePF cliente, Veiculo veiculo) {
 		super(id, dataInicio, dataFim, seguradora, sinistros, condutores);
 		this.cliente = cliente;
 		this.veiculo = veiculo;
-		this.qtdVeiculosAnteriores = qtdVeiculosAnteriores;
 		setValorMensal(calcularValor());
 	}
 
 	@Override
 	public double calcularValor() {
+		long qtdVeiculos = getSeguradora().getSeguros().stream()
+				.filter(seg -> seg instanceof SeguroPF s && !s.veiculo.equals(veiculo))
+				.count();
 		return CalcSeguro.VALOR_BASE.getValor()
 				* CalcSeguro.deIdade(cliente.getIdade()).getValor()
-				* (1 + 1 / (qtdVeiculosAnteriores + 2))
+				* (1 + 1 / (qtdVeiculos + 2))
 				* (2 + getSeguradora().getSinistrosPorCliente(cliente).size() / 10)
 				* (5 + getQtdSinistrosCondutor() / 10);
 	}
@@ -44,19 +45,9 @@ public final class SeguroPF extends Seguro {
 		setValorMensal(calcularValor());
 	}
 
-	public int getQtdVeiculosAnteriores() {
-		return qtdVeiculosAnteriores;
-	}
-
-	public void setQtdVeiculosAnteriores(int qtdVeiculosAnteriores) {
-		this.qtdVeiculosAnteriores = qtdVeiculosAnteriores;
-		setValorMensal(calcularValor());
-	}
-
 	@Override
 	public String toString() {
-		return "SeguroPF [cliente=" + cliente.getID() + ", veiculo=" + veiculo.getPlaca() + ", qtdVeiculosAnteriores="
-				+ qtdVeiculosAnteriores + "]";
+		return "SeguroPF [cliente=" + cliente.getID() + ", veiculo=" + veiculo.getPlaca() + "]";
 	}
 
 	
