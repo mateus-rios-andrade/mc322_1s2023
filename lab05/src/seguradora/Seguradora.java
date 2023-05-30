@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Seguradora {
 	private String nome, telefone, email, endereco;
@@ -30,11 +31,11 @@ public class Seguradora {
 	}
 
 	public double calcularPrecoSeguro(Cliente cliente) {
-		return getSegurosPorCliente(cliente).stream().mapToDouble(s -> s.getValorMensal()).sum();
+		return getSegurosPorCliente(cliente).stream().mapToDouble(Seguro::getValorMensal).sum();
 	}
 
 	public double calcularReceita() {
-		return seguros.stream().mapToDouble(s -> s.getValorMensal()).sum();
+		return seguros.stream().mapToDouble(Seguro::getValorMensal).sum();
 	}
 
 	public boolean cadastrarCliente(Cliente cliente) {
@@ -54,19 +55,37 @@ public class Seguradora {
 		return clientes.remove(cliente);
 	}
 
+	private void finalizarTroca(ClientePF clienteAntigo, ClientePF clienteNovo) {
+		seguros.stream()
+				.filter(s -> s.getCliente().equals(clienteAntigo))
+				.map(s -> (SeguroPF) s)
+				.forEach(s -> s.setCliente(clienteNovo));
+	}
+
+	private void finalizarTroca(ClientePJ clienteAntigo, ClientePJ clienteNovo) {
+		seguros.stream()
+				.filter(s -> s.getCliente().equals(clienteAntigo))
+				.forEach(s -> ((SeguroPJ) s).setCliente(clienteNovo));
+	}
+
 	public void trocarCliente(Cliente clienteAntigo, Cliente clienteNovo) {
-		// clientes.remove(clienteAntigo);
-		// clientes.add(clienteNovo);
-		// sinistros.stream()
-		// .filter(s -> s.getCliente().equals(clienteAntigo))
-		// .forEach(s -> s.setCliente(clienteNovo));
+		if (cadastrarCliente(clienteNovo)) {
+			clientes.remove(clienteAntigo);
+			if (clienteAntigo instanceof ClientePF) {
+				finalizarTroca((ClientePF) clienteAntigo, (ClientePF) clienteNovo);
+			} else {
+				finalizarTroca((ClientePJ) clienteAntigo, (ClientePJ) clienteNovo);
+			}
+
+		}
 	}
 
 	public List<Cliente> listarClientes(Cliente.Tipo tipoCliente) {
-		return switch (tipoCliente) {
-			case PF -> clientes.stream().filter(cliente -> cliente instanceof ClientePF).toList();
-			case PJ -> clientes.stream().filter(cliente -> cliente instanceof ClientePJ).toList();
+		Predicate<Cliente> p = switch (tipoCliente) {
+			case PF -> (cliente -> cliente instanceof ClientePF);
+			case PJ -> (cliente -> cliente instanceof ClientePJ);
 		};
+		return clientes.stream().filter(p).toList();
 	}
 
 	public List<Sinistro> listarSinistros() {
@@ -75,9 +94,9 @@ public class Seguradora {
 				.toList();
 	}
 
-	public boolean gerarSeguro(ClientePF cliente, Veiculo veiculo, List<Condutor> condutores, LocalDate dataInicio,
+	public SeguroPF gerarSeguro(ClientePF cliente, Veiculo veiculo, List<ICondutor> condutores, LocalDate dataInicio,
 			LocalDate dataFim) {
-		return seguros.add(new SeguroPF(
+		var s = new SeguroPF(
 				genId(),
 				dataInicio,
 				dataFim,
@@ -85,12 +104,14 @@ public class Seguradora {
 				Collections.emptyList(),
 				condutores,
 				cliente,
-				veiculo));
+				veiculo);
+		seguros.add(s);
+		return s;
 	}
 
-	public boolean gerarSeguro(ClientePJ cliente, Frota frota, List<Condutor> condutores, LocalDate dataInicio,
+	public SeguroPJ gerarSeguro(ClientePJ cliente, Frota frota, List<ICondutor> condutores, LocalDate dataInicio,
 			LocalDate dataFim) {
-		return seguros.add(new SeguroPJ(
+		var s = new SeguroPJ(
 				genId(),
 				dataInicio,
 				dataFim,
@@ -98,13 +119,21 @@ public class Seguradora {
 				Collections.emptyList(),
 				condutores,
 				cliente,
-				frota));
+				frota);
+		seguros.add(s);
+		return s;
+	}
+
+	public boolean gerarSinistro(Seguro seguro, ICondutor condutor, LocalDate data, String endereço) {
+		Sinistro sinistro = new Sinistro(data, endereço, this, seguro, condutor);
+		return seguro.adicionarSinistro(sinistro, condutor);
 	}
 
 	public void visualizarSinistro(Cliente cliente) {
-		// sinistros.stream()
-		// .filter(sinistro -> sinistro.getCliente().equals(cliente))
-		// .forEach(System.out::println);
+		seguros.stream()
+				.filter(sinistro -> sinistro.getCliente().equals(cliente))
+				.flatMap(s -> s.getSinistros().stream())
+				.forEach(System.out::println);
 	}
 
 	public List<Seguro> getSegurosPorCliente(Cliente cliente) {
@@ -112,16 +141,9 @@ public class Seguradora {
 	}
 
 	public List<Sinistro> getSinistrosPorCliente(Cliente cliente) {
-		// var sinistros = new ArrayList<Sinistro>();
-		// for (var seguro : seguros) {
-		// if (seguro.getCliente().equals(cliente)) {
-		// sinistros.addAll(seguro.getSinistros());
-		// }
-		// }
-		// return sinistros;
 		return seguros.stream()
 				.filter(s -> s.getCliente().equals(cliente))
-				.flatMap(s -> s.getSinistros().stream())
+				.flatMap(s -> s.getSinistros().stream().filter(sin -> sin.getSeguradora() == this))
 				.toList();
 	}
 

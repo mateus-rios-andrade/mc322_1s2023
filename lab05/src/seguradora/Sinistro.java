@@ -7,16 +7,22 @@ public class Sinistro implements MkString {
 	private LocalDate data;
 	private String endereco;
 	private Seguradora seguradora;
-	private Veiculo veiculo;
-	private Cliente cliente;
+	private Seguro seguro;
+	private ICondutor condutor;
 
-	public Sinistro(int id, LocalDate data, String endereco, Seguradora seguradora, Veiculo veiculo, Cliente cliente) {
-		this.id = id;
+	private static int proxId;
+
+	private static int genId() {
+		return proxId++;
+	}
+
+	public Sinistro(LocalDate data, String endereco, Seguradora seguradora, Seguro seguro, ICondutor condutor) {
+		this.id = genId();
 		this.data = data;
 		this.endereco = endereco;
 		this.seguradora = seguradora;
-		this.veiculo = veiculo;
-		this.cliente = cliente;
+		this.seguro = seguro;
+		this.condutor = condutor;
 	}
 
 	public int getId() {
@@ -47,29 +53,47 @@ public class Sinistro implements MkString {
 		this.seguradora = seguradora;
 	}
 
-	public Veiculo getVeiculo() {
-		return veiculo;
+	public Seguro getSeguro() {
+		return seguro;
 	}
 
-	public void setVeiculo(Veiculo veiculo) {
-		this.veiculo = veiculo;
+	public void setSeguro(Seguro seguro) {
+		this.seguro = seguro;
 	}
 
-	public Cliente getCliente() {
-		return cliente;
+	public ICondutor getCondutor() {
+		return condutor;
 	}
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setCondutor(ICondutor condutor) {
+		this.condutor = condutor;
 	}
 
 	public String mkString(String prefixo, String sep, String sufixo) {
-		return prefixo + "ID: " + id + sep + "Data: " + data + sep + "Endereço: " + endereco + sep + "Seguradora: " + seguradora
-		+ sep + "Veículo: " + veiculo + sep + "Cliente: " + cliente + sufixo;
+		return prefixo + "ID: " + id + sep + "Data: " + data + sep + "Endereço: " + endereco + sep + "Seguradora: "
+				+ seguradora
+				+ sep + "Seguro: " + seguro + sep + "ICondutor: " + condutor + sufixo;
 	}
 
 	@Override
 	public String toString() {
-		return mkString("Sinistro(\n\t", ",\n\t", "\n)");
+		return mkString("Sinistro(", ", ", ")");
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Sinistro other = (Sinistro) obj;
+		return id == other.id;
 	}
 }

@@ -1,35 +1,57 @@
 package seguradora;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
+public sealed abstract class Seguro implements MkString permits SeguroPF, SeguroPJ {
 	private final int id;
 	private LocalDate dataInicio, dataFim;
 	private Seguradora seguradora;
 	private List<Sinistro> sinistros = new ArrayList<>();
-	private List<Condutor> condutores = new ArrayList<>();
+	private List<ICondutor> condutores = new ArrayList<>();
 	private double valorMensal;
 
-	public Seguro(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, Collection<Sinistro> sinistros,
-			Collection<Condutor> condutores) {
+	public Seguro(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora,
+			Collection<Sinistro> sinistros,
+			Collection<ICondutor> condutores) {
 		this.id = id;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.seguradora = seguradora;
 		this.sinistros.addAll(sinistros);
+		condutores.forEach(this::addSinistros);
 		this.condutores.addAll(condutores);
 	}
 
-	public boolean autorizarCondutor(Condutor condutor) {
-		boolean r = condutores.add(condutor);
-		setValorMensal(calcularValor());
-		return r;
+	private void addSinistros(ICondutor condutor) {
+		for (Sinistro sinistro : condutor.getSinistros()) {
+			if (!sinistros.contains(sinistro)) {
+				sinistros.add(sinistro);
+			}
+		}
 	}
 
-	public boolean desautorizarCondutor(Condutor condutor) {
+	public boolean adicionarSinistro(Sinistro sinistro, ICondutor condutor) {
+		if (!sinistros.contains(sinistro)) {
+			sinistros.add(sinistro);
+			return condutor.adicionarSinistro(sinistro);
+		}
+		return false;
+	}
+
+	public boolean autorizarCondutor(ICondutor condutor) {
+		if (!condutores.contains(condutor)) {
+			condutores.add(condutor);
+			setValorMensal(calcularValor());
+			return true;
+		}
+		return false;
+	}
+
+	public boolean desautorizarCondutor(ICondutor condutor) {
 		boolean r = condutores.remove(condutor);
 		setValorMensal(calcularValor());
 		return r;
@@ -75,7 +97,7 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 		return sinistros;
 	}
 
-	public List<Condutor> getCondutores() {
+	public List<ICondutor> getCondutores() {
 		return condutores;
 	}
 
@@ -88,8 +110,19 @@ public sealed abstract class Seguro permits SeguroPF, SeguroPJ {
 	}
 
 	@Override
+	public String mkString(String prefixo, String sep, String sufixo) {
+		var dtf = DateTimeFormatter.ofPattern("d/M/yyyy");
+		return prefixo + "Id: " + id + sep + "Seguradora: " + seguradora.getNome() + sep + "ID Cliente: "
+				+ getCliente().getID() + sep + "Nome Cliente: " + getCliente().getNome() + sep + "Data início: "
+				+ dataInicio.format(dtf)
+				+ sep + "Data fim: " + dataFim.format(dtf) + sep + "Valor Mensal: " + String.format("%.2f", valorMensal)
+				+ sufixo;
+	}
+
+	@Override
 	public String toString() {
-		return "Seguro [id=" + id + ", dataInicio=" + dataInicio + ", dataFim=" + dataFim + ", seguradora=" + seguradora.getNome()
+		return "Seguro [id=" + id + ", dataInicio=" + dataInicio + ", dataFim=" + dataFim + ", seguradora="
+				+ seguradora.getNome()
 				+ ", nº sinistros=" + sinistros + ", condutores=" + condutores + ", valorMensal=" + valorMensal + "]";
 	}
 }

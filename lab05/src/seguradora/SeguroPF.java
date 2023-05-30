@@ -6,8 +6,9 @@ import java.util.List;
 public final class SeguroPF extends Seguro {
 	private ClientePF cliente;
 	private Veiculo veiculo;
+
 	public SeguroPF(int id, LocalDate dataInicio, LocalDate dataFim, Seguradora seguradora, List<Sinistro> sinistros,
-			List<Condutor> condutores, ClientePF cliente, Veiculo veiculo) {
+			List<ICondutor> condutores, ClientePF cliente, Veiculo veiculo) {
 		super(id, dataInicio, dataFim, seguradora, sinistros, condutores);
 		this.cliente = cliente;
 		this.veiculo = veiculo;
@@ -46,9 +47,15 @@ public final class SeguroPF extends Seguro {
 	}
 
 	@Override
+	public String mkString(String prefixo, String sep, String sufixo) {
+		return super.mkString(prefixo, sep, sep) + "CPF cliente: " + cliente.getCpf() + sep + "Placa Veículo: " + veiculo.getPlaca() + sufixo;
+	}
+
+	@Override
 	public String toString() {
 		return "SeguroPF [cliente=" + cliente.getID() + ", veiculo=" + veiculo.getPlaca() + "]";
 	}
+
 
 	
 }

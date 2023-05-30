@@ -9,10 +9,11 @@ public final class ClientePJ extends Cliente {
 	private int qtdFuncionarios;
 	private List<Frota> frotas = new ArrayList<>();
 
-	public ClientePJ(String nome, String endereco, List<Frota> frotas, String cnpj, LocalDate dataFundacao, int qtdFuncionarios) {
-		super(nome, endereco);
+	public ClientePJ(String nome, String telefone, String endereco, String email, List<Frota> frotas, String cnpj, LocalDate dataFundacao, int qtdFuncionarios) {
+		super(nome, telefone, endereco, email);
 		this.cnpj = cnpj;
 		this.dataFundacao = dataFundacao;
+		this.qtdFuncionarios = qtdFuncionarios;
 		this.frotas.addAll(frotas);
 	}
 
@@ -34,6 +35,11 @@ public final class ClientePJ extends Cliente {
 
 	public boolean removerFrota(Frota frota) {
 		return frotas.remove(frota);
+	}
+
+	@Override
+	public Tipo getTipo() {
+		return Tipo.PJ;
 	}
 
 	@Override

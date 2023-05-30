@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -12,7 +13,7 @@ import java.util.function.Predicate;
 public class Utils {
 
 	public static List<Veiculo> getVeiculos(Scanner sc) {
-		int nVeiculos = getInt(sc, "Veículos a registrar");
+		int nVeiculos = getInt(sc, "Qtd. de veículos a registrar: ");
 		var veiculos = new ArrayList<Veiculo>();
 		for (int i = 1; i <= nVeiculos; i++) {
 			System.out.println("Veiculo " + i + " :");
@@ -86,8 +87,10 @@ public class Utils {
 	}
 
 	public static Cliente criarCliente(Scanner sc) {
-		String nome = getString(sc, "Nome: ");
+		String nome = getID(sc, "Nome: ", Validacao::validarNome);
+		String telefone = getString(sc, "Telefone: ");
 		String endereco = getString(sc, "Endereço: ");
+		String email = getString(sc, "Email: ");
 		String tipo;
 		while (true) {
 			tipo = getString(sc, "Tipo: ").toUpperCase();
@@ -101,24 +104,33 @@ public class Utils {
 			case "PF" ->
 				new ClientePF(
 						nome,
+						telefone,
 						endereco,
+						email,
 						new ArrayList<>(),
 						getString(sc, "Edudação: "),
 						getString(sc, "Gênero: "),
 						getString(sc, "Classe econômica: "),
 						getID(sc, "CPF: ", Validacao::validarCPF),
 						getDate(sc, "Data de Nascimento: "),
-						getDate(sc, "Data de Licença: "));
+						getDate(sc, "Data de Licença: "),
+						Collections.emptyList());
 			case "PJ" ->
 				new ClientePJ(
 						nome,
+						telefone,
 						endereco,
+						email,
 						new ArrayList<>(),
 						getID(sc, "CNPJ: ", Validacao::validarCNPJ),
 						getDate(sc, "Data de Fundação: "),
 						getInt(sc, "Quantidade de funcionários: "));
 			default -> null;
 		};
+	}
+
+	public static Frota criarFrota(Scanner sc) {
+		return new Frota(getString(sc, "Nome: "), getVeiculos(sc));
 	}
 
 	public static Cliente getCliente(Scanner sc, Seguradora seguradora) {
@@ -135,6 +147,11 @@ public class Utils {
 			}
 			System.out.println("Não existe cliente com essa identificação.");
 		}
+	}
+
+	public static ICondutor getCondutor(Scanner sc, Map<String, ICondutor> condutores) {
+		String cpf = getID(sc, "CPF: ", Validacao::validarCPF);
+		return condutores.get(cpf);
 	}
 
 	public static void mostrarClientes(Seguradora seguradora) {
@@ -154,7 +171,7 @@ public class Utils {
 		}
 		int ret;
 		while (true) {
-			ret = getInt(sc, "Índice do " + nome + ": ");
+			ret = getInt(sc, "Índice: ");
 			if (ret < 0 || ret > i) {
 				System.out.println("Índice inválido.");
 			} else {
@@ -164,10 +181,36 @@ public class Utils {
 		return ret;
 	}
 
+	public static List<Integer> getItens(Scanner sc, Iterable<? extends MkString> iter, String nome) {
+		if (!iter.iterator().hasNext()) {
+			return Collections.emptyList();
+		}
+		int i = 0;
+		for (MkString x : iter) {
+			System.out.println(i++ + " - " + x.mkString("", ", ", ""));
+		}
+		int n = getInt(sc, "Nº de itens: ");
+		n = n > i ? i : n;
+		var ret = new ArrayList<Integer>();
+		for (i = 0; i < n; i++) {
+			int j;
+			while (true) {
+				j = getInt(sc, (i + 1) + "º índice: ");
+				if (j < 0 || j > n) {
+					System.out.println("Índice inválido.");
+				} else {
+					break;
+				}
+			}
+			ret.add(j);
+		}
+		return ret;
+	}
+
 	public static void printIter(Iterable<? extends MkString> iter, String nome) {
 		int i = 0;
 		for (MkString x : iter) {
-			System.out.println(x.mkString(nome + i++ + ":\n\t ", ",\n\t", "\n"));
+			System.out.println(x.mkString(nome + " " + i++ + ":\n\t ", ",\n\t", "\n"));
 		}
 	}
 }

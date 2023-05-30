@@ -2,138 +2,62 @@ package seguradora;
 
 import static seguradora.Utils.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public sealed interface MenuCadastrar
-	permits 
-	MenuCadastrar.Cadastrar,
-	MenuCadastrar.Veiculo,
-	MenuCadastrar.Seguradora,
-	MenuCadastrar.Condutor,
-	MenuCadastrar.Voltar {
-	public int codigo();
-	
-	public void acao(Scanner sc, Map<String, Seguradora> seguradoras);
-
-	public final class Cadastrar implements MenuCadastrar {
-		private final int codigo = 2;
-
-		private Cadastrar() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class Veiculo implements MenuCadastrar {
-		private final int codigo = 2;
-
-		private Veiculo() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class Seguradora implements MenuCadastrar {
-		private final int codigo = 2;
-
-		private Seguradora() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class Condutor implements MenuCadastrar {
-		private final int codigo = 2;
-
-		private Condutor() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class Voltar implements MenuCadastrar {
-		private final int codigo = 2;
-
-		private Voltar() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-}
-/*
-public enum MenuCadastrar {
-	CLIENTE(1),
-	VEICULO(2),
-	SEGURADORA(3),
-	VOLTAR(4),
-	INVALIDO(-1);
-
-	public static void cadastrar(Scanner sc, Map<String, Seguradora> seguradoras) {
+public class MenuCadastrar {
+	public static void cadastrar(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		boolean ficar = true;
 		while (ficar) {
 			System.out.println("1.1 - Cadastrar Cliente PF/PJ");
 			System.out.println("1.2 - Cadastrar Veiculo");
-			System.out.println("1.3 - Cadastrar Seguradora");
-			System.out.println("1.4 - Voltar");
-			MenuCadastrar op = getOpcao(getInt(sc, ""));
+			System.out.println("1.3 - Cadastrar Frota");
+			System.out.println("1.4 - Cadastrar Seguradora");
+			System.out.println("1.5 - Cadastrar Condutor");
+			System.out.println("1.6 - Voltar");
+			int op = getInt(sc, "");
 			switch (op) {
-				case CLIENTE -> cliente(sc, seguradoras);
-				case VEICULO -> veiculo(sc, seguradoras);
-				case SEGURADORA -> seguradora(sc, seguradoras);
-				case VOLTAR -> ficar = false;
+				case 1 -> cliente(sc, seguradoras, condutores);
+				case 2 -> veiculo(sc, seguradoras);
+				case 3 -> frota(sc, seguradoras);
+				case 4 -> seguradora(sc, seguradoras);
+				case 5 -> condutor(sc, condutores);
+				case 6 -> ficar = false;
 				default -> System.out.println("Comando inválido.");
 			}
 		}
 	}
 
-	private static void cliente(Scanner sc, Map<String, Seguradora> seguradoras) {
+	private static void condutor(Scanner sc, Map<String, ICondutor> condutores) {
+		String cpf = getID(sc, "CPF: ", Validacao::validarCPF);
+		if (condutores.containsKey(cpf)) {
+			System.out.println("Já foi registrado um condutor com esse cpf.");
+			return;
+		}
+		var condutor = new Condutor(
+				cpf,
+				getID(sc, "Nome: ", Validacao::validarNome),
+				getString(sc, "Telefone: "),
+				getString(sc, "Endereço: "),
+				getString(sc, "Email: "),
+				getDate(sc, "Data de Nascimento: "),
+				Collections.emptyList());
+		condutores.put(cpf, condutor);
+
+	}
+
+	private static void cliente(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		Seguradora seg = getSeguradora(sc, seguradoras);
 		if (seg == null) {
 			return;
 		}
-		seg.cadastrarCliente(criarCliente(sc));
+		Cliente cliente = criarCliente(sc);
+		seg.cadastrarCliente(cliente);
+		if (cliente instanceof ClientePF c) {
+			condutores.putIfAbsent(c.getCpf(), c);
+		}
 	}
 
 	private static void veiculo(Scanner sc, Map<String, Seguradora> seguradoras) {
@@ -145,8 +69,30 @@ public enum MenuCadastrar {
 		if (cliente == null) {
 			return;
 		}
-		var veiculos = getVeiculos(sc);
-		cliente.getVeiculos().addAll(veiculos);
+		List<Veiculo> veiculos = getVeiculos(sc);
+		if (cliente instanceof ClientePF c) {
+			c.getVeiculos().addAll(veiculos);
+		} else if (cliente instanceof ClientePJ c) {
+			System.out.println("Escolha a frota.");
+			int i = getItem(sc, c.getFrotas(), "frota");
+			if (i < 0) {
+				System.out.println("Esse cliente não possui frotas registradas.");
+			}
+			Frota frota = c.getFrotas().get(i);
+			veiculos.forEach(frota::addVeiculo);
+		}
+	}
+
+	private static void frota(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		Cliente cliente = getCliente(sc, seg);
+		if (cliente == null) {
+			return;
+		} else if (cliente instanceof ClientePJ c) {
+			c.cadastrarFrota(criarFrota(sc));
+		} else {
+			System.out.println("Frotas só podem ser adicionadas à clientes pj");
+		}
 	}
 
 	private static void seguradora(Scanner sc, Map<String, Seguradora> seguradoras) {
@@ -157,25 +103,4 @@ public enum MenuCadastrar {
 				getString(sc, "Email: "),
 				getString(sc, "Endereço: ")));
 	}
-
-	public static MenuCadastrar getOpcao(int index) {
-		return switch (index) {
-			case 1 -> CLIENTE;
-			case 2 -> VEICULO;
-			case 3 -> SEGURADORA;
-			case 4 -> VOLTAR;
-			default -> INVALIDO;
-		};
-	}
-
-	private final int index;
-
-	MenuCadastrar(int index) {
-		this.index = index;
-	}
-
-	public int getIndex() {
-		return index;
-	}
 }
-*/

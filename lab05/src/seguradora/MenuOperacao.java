@@ -1,285 +1,168 @@
 package seguradora;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
 import static seguradora.Utils.*;
 
-public sealed interface MenuOperacao
-		permits
-		MenuOperacao.Sair,
-		MenuOperacao.Cadastrar,
-		MenuOperacao.Listar,
-		MenuOperacao.Excluir,
-		MenuOperacao.GerarSeguro,
-		MenuOperacao.GerarSinistro,
-		MenuOperacao.TransferirSeguro,
-		MenuOperacao.CalcularReceita {
-	public static final MenuOperacao[] operacoes = {
-			new Sair(),
-			new Cadastrar(),
-			new Listar(),
-			new Excluir(),
-			new GerarSeguro(),
-			new GerarSinistro(),
-			new TransferirSeguro(),
-			new CalcularReceita() };
-
-	public int codigo();
-
-	public void acao(Scanner sc, Map<String, Seguradora> seguradoras);
-
-	public final class Sair implements MenuOperacao {
-		private final int codigo = 0;
-
-		private Sair() {
-
+public class MenuOperacao {
+	public static void menuPrincipal(Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
+		Scanner sc = new Scanner(System.in);
+		boolean ficar = true;
+		while (ficar) {
+			System.out.println("1 - Cadastros");
+			System.out.println("2 - Listar");
+			System.out.println("3 - Excluir");
+			System.out.println("4 - Gerar Seguro");
+			System.out.println("5 - Gerar Sinistro");
+			System.out.println("6 - Transferir Seguros");
+			System.out.println("7 - Calcular Receita Seguradora");
+			System.out.println("8 - Autorizar Condutor");
+			System.out.println("9 - Desautorizar Condutor");
+			System.out.println("0 - Sair");
+			int op = getInt(sc, "");
+			switch (op) {
+				case 1 -> MenuCadastrar.cadastrar(sc, seguradoras, condutores);
+				case 2 -> MenuListar.listar(sc, seguradoras, condutores);
+				case 3 -> MenuExcluir.excluir(sc, seguradoras, condutores);
+				case 4 -> gerarSeguro(sc, seguradoras, condutores);
+				case 5 -> gerarSinistro(sc, seguradoras, condutores);
+				case 6 -> transferirSeguros(sc, seguradoras);
+				case 7 -> calcularReceita(sc, seguradoras);
+				case 8 -> autorizarCondutor(sc, seguradoras, condutores);
+				case 9 -> desautorizarCondutor(sc, seguradoras);
+				case 0 -> ficar = false;
+				default -> System.out.println("Comando inválido.");
+			}
 		}
+		sc.close();
+	}
 
-		@Override
-		public int codigo() {
-			return codigo;
+	private static void gerarSeguro(Scanner sc, Map<String, Seguradora> seguradoras,
+			Map<String, ICondutor> condutores) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
 		}
+		Cliente cliente = getCliente(sc, seg);
+		if (cliente == null) {
+			return;
+		}
+		List<ICondutor> conduts = List.copyOf(condutores.values());
+		System.out.println("Escolha os condutores.");
+		var idxs = getItens(sc, conduts, "condutor");
+		List<ICondutor> condutoresSeguro = idxs.stream().map(conduts::get).toList();
+		LocalDate dataInicio = getDate(sc, "Data início: "), dataFim = getDate(sc, "Data fim: ");
+		if (cliente instanceof ClientePF c) {
+			System.out.println("Escolha o veículo.");
+			int i = getItem(sc, c.getVeiculos(), "veículo");
+			if (i < 0) {
+				System.out.println("Esse cliente não possui veículos para assegurar.");
+				return;
+			}
+			seg.gerarSeguro(c, c.getVeiculos().get(i), condutoresSeguro, dataInicio, dataFim);
+		} else if (cliente instanceof ClientePJ c) {
+			System.out.println("Escolha a frota.");
+			int i = getItem(sc, c.getFrotas(), "frota");
+			if (i < 0) {
+				System.out.println("Esse cliente não possui frotas para assegurar.");
+				return;
+			}
+			seg.gerarSeguro(c, c.getFrotas().get(i), condutoresSeguro, dataInicio, dataFim);
+		}
+	}
 
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-			sc.close();
-			System.out.println("Tchau!");
+	private static void gerarSinistro(Scanner sc, Map<String, Seguradora> seguradoras,
+			Map<String, ICondutor> condutores) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		System.out.println("Escolha o seguro.");
+		int idxSeguro = getItem(sc, seg.getSeguros(), "seguro");
+		if (idxSeguro < 0) {
+			System.out.println("Não existem seguros registrados nessa seguradora.");
+			return;
+		}
+		Seguro seguro = seg.getSeguros().get(idxSeguro);
+		System.out.println("Escolha o condutor.");
+		int idxCondutor = getItem(sc, seguro.getCondutores(), "condutor");
+		if (idxCondutor < 0) {
+			System.out.println("Não existem condutores registrados nesse seguro.");
+			return;
+		}
+		ICondutor condutor = seguro.getCondutores().get(idxCondutor);
+		seg.gerarSinistro(seguro, condutor, getDate(sc, "Data da ocorrência: "), getString(sc, "Endereço: "));
+	}
+
+	private static void transferirSeguros(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		Cliente clienteOriginal = getCliente(sc, seg);
+		if (clienteOriginal == null) {
+			return;
+		}
+		Cliente novoCliente = criarCliente(sc);
+		if (clienteOriginal instanceof ClientePF && novoCliente instanceof ClientePJ
+				|| clienteOriginal instanceof ClientePJ && novoCliente instanceof ClientePF) {
+			System.out.println("Só é possível transferir seguros entre clientes do mesmo tipo.");
+		} else {
+			seg.trocarCliente(clienteOriginal, novoCliente);
 		}
 
 	}
 
-	public final class Cadastrar implements MenuOperacao {
-		private final int codigo = 1;
-
-		private Cadastrar() {
+	private static void calcularReceita(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
 		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
+		System.out.printf("R$ %.2f\n", seg.calcularReceita());
 	}
 
-	public final class Listar implements MenuOperacao {
-		private final int codigo = 2;
-
-		private Listar() {
+	private static void autorizarCondutor(Scanner sc, Map<String, Seguradora> seguradoras,
+			Map<String, ICondutor> condutores) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
 		}
-
-		@Override
-		public int codigo() {
-			return codigo;
+		System.out.println("Escolha o seguro.");
+		int idxSeguro = getItem(sc, seg.getSeguros(), "seguro");
+		if (idxSeguro < 0) {
+			System.out.println("Não existem seguros nessa seguradora.");
 		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
+		Seguro seguro = seg.getSeguros().get(idxSeguro);
+		List<ICondutor> conduts = List.copyOf(condutores.values());
+		System.out.println("Escolha o condutor.");
+		int idxCondutor = getItem(sc, conduts, "condutor");
+		if (idxCondutor < 0) {
+			System.out.println("Não existem condutores registrados.");
+			return;
 		}
+		ICondutor condutor = conduts.get(idxCondutor);
+		seguro.autorizarCondutor(condutor);
 	}
 
-	public final class Excluir implements MenuOperacao {
-		private final int codigo = 3;
-
-		private Excluir() {
+	private static void desautorizarCondutor(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		System.out.println("Escolha o seguro");
+		int idxSeguro = getItem(sc, seg.getSeguros(), "seguro");
+		if (idxSeguro < 0) {
+			System.out.println("Não existem seguros nessa seguradora.");
 		}
+		Seguro seguro = seg.getSeguros().get(idxSeguro);
+		System.out.println("Escolha o condutor.");
 
-		@Override
-		public int codigo() {
-			return codigo;
+		int idxCondutor = getItem(sc, seguro.getCondutores(), "condutor");
+		if (idxCondutor < 0) {
+			System.out.println("Não existem condutores registrados.");
+			return;
 		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
+		ICondutor condutor = seguro.getCondutores().get(idxCondutor);
+		seguro.desautorizarCondutor(condutor);
 	}
-
-	public final class GerarSeguro implements MenuOperacao {
-		private final int codigo = 4;
-
-		private GerarSeguro() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class GerarSinistro implements MenuOperacao {
-		private final int codigo = 5;
-
-		private GerarSinistro() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class TransferirSeguro implements MenuOperacao {
-		private final int codigo = 6;
-
-		private TransferirSeguro() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
-	public final class CalcularReceita implements MenuOperacao {
-		private final int codigo = 7;
-
-		private CalcularReceita() {
-		}
-
-		@Override
-		public int codigo() {
-			return codigo;
-		}
-
-		@Override
-		public void acao(Scanner sc, Map<String, Seguradora> seguradoras) {
-
-		}
-	}
-
 }
-/*
- * public enum MenuOperacao {
- * SAIR(0),
- * CADASTRAR(1),
- * LISTAR(2),
- * EXCLUIR(3),
- * GERAR_SINISTRO(4),
- * TRANSFERIR_SEGURO(5),
- * CALCULAR_RECEITA(6),
- * INVALIDO(-1);
- * 
- * public static void menuPrincipal(Map<String, Seguradora> seguradoras) {
- * Scanner sc = new Scanner(System.in);
- * boolean ficar = true;
- * while (ficar) {
- * System.out.println("1 - Cadastros");
- * System.out.println("2 - Listar");
- * System.out.println("3 - Excluir");
- * System.out.println("4 - Gerar Sinistro");
- * System.out.println("5 - Transferir Seguro");
- * System.out.println("6 - Calcular Receita Seguradora");
- * System.out.println("0 - Sair");
- * MenuOperacao op = MenuOperacao.getOpcao(getInt(sc, ""));
- * switch (op) {
- * case CADASTRAR -> MenuCadastrar.cadastrar(sc, seguradoras);
- * case LISTAR -> MenuListar.listar(sc, seguradoras);
- * case EXCLUIR -> MenuExcluir.excluir(sc, seguradoras);
- * case GERAR_SINISTRO -> gerarSinistro(sc, seguradoras);
- * case TRANSFERIR_SEGURO -> transferirSeguro(sc, seguradoras);
- * case CALCULAR_RECEITA -> calcularReceita(sc, seguradoras);
- * case SAIR -> ficar = false;
- * default -> System.out.println("Comando inválido.");
- * }
- * }
- * sc.close();
- * }
- * 
- * private static void gerarSinistro(Scanner sc, Map<String, Seguradora>
- * seguradoras) {
- * Seguradora seg = getSeguradora(sc, seguradoras);
- * if (seg == null) {
- * return;
- * }
- * Cliente cliente = getCliente(sc, seg);
- * if (cliente == null) {
- * return;
- * }
- * int i = getItem(sc, cliente.getVeiculos(), "Veículo");
- * if (i < 0) {
- * System.out.println("Esse cliente não possui veículos.");
- * return;
- * }
- * seg.gerarSinistro(
- * getDate(sc, "Data do ocorrido: "),
- * getString(sc, "Endereço"),
- * cliente.getVeiculos().get(i),
- * cliente);
- * }
- * 
- * private static void transferirSeguro(Scanner sc, Map<String, Seguradora>
- * seguradoras) {
- * Seguradora seg = getSeguradora(sc, seguradoras);
- * if (seg == null) {
- * return;
- * }
- * Cliente clienteOriginal = getCliente(sc, seg);
- * if (clienteOriginal == null) {
- * return;
- * }
- * Cliente novoCliente = criarCliente(sc);
- * if (clienteOriginal instanceof ClientePF && novoCliente instanceof ClientePJ
- * || clienteOriginal instanceof ClientePJ && novoCliente instanceof ClientePF)
- * {
- * System.out.
- * println("Só é possível transferir seguros entre clientes do mesmo tipo.");
- * } else {
- * seg.trocarCliente(clienteOriginal, novoCliente);
- * }
- * 
- * }
- * 
- * private static void calcularReceita(Scanner sc, Map<String, Seguradora>
- * seguradoras) {
- * Seguradora seg = getSeguradora(sc, seguradoras);
- * if (seg == null) {
- * return;
- * }
- * System.out.printf("R$ %.2f\n", seg.calcularReceita());
- * }
- * 
- * public static MenuOperacao getOpcao(int index) {
- * return switch (index) {
- * case 0 -> SAIR;
- * case 1 -> CADASTRAR;
- * case 2 -> LISTAR;
- * case 3 -> EXCLUIR;
- * case 4 -> GERAR_SINISTRO;
- * case 5 -> TRANSFERIR_SEGURO;
- * case 6 -> CALCULAR_RECEITA;
- * default -> INVALIDO;
- * };
- * }
- * 
- * private final int index;
- * 
- * MenuOperacao(int index) {
- * this.index = index;
- * }
- * 
- * public int getIndex() {
- * return index;
- * }
- * 
- * }
- */

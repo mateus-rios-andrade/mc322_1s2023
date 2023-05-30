@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Frota {
+public class Frota implements MkString {
 	private final String code;
+	private String nome;
 	private List<Veiculo> veiculos = new ArrayList<>();
 
 	private static String genCode() {
 		return UUID.randomUUID().toString();
 	}
 
-	public Frota(Iterable<Veiculo> veiculos) {
+	public Frota(String nome, Iterable<Veiculo> veiculos) {
 		code = genCode();
+		this.nome = nome;
 		if (veiculos != null) {
 			for (Veiculo veiculo : veiculos) {
 				this.veiculos.add(veiculo);
@@ -37,9 +39,22 @@ public class Frota {
 		return veiculos;
 	}
 
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
 	@Override
 	public String toString() {
 		return "Frota [code=" + code + ", Nº veículos=" + veiculos.size() + "]";
+	}
+
+	@Override
+	public String mkString(String prefixo, String sep, String sufixo) {
+		return prefixo + "Código: " + code + sep + ", Nº veículos=" + veiculos.size() + sufixo;
 	}
 
 }

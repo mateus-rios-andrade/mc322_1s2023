@@ -2,18 +2,13 @@ package seguradora;
 
 import java.util.Map;
 import java.util.Scanner;
+
+import seguradora.Cliente.Tipo;
+
 import static seguradora.Utils.*;
 
-public enum MenuListar {
-	CLIENTES_SEG(1),
-	SINISTROS_SEG(2),
-	SINISTROS_CLIENTE(3),
-	VEICULOS_CLIENTE(4),
-	VEICULOS_SEG(5),
-	VOLTAR(6),
-	INVALIDO(-1);
-
-	public static void listar(Scanner sc, Map<String, Seguradora> seguradoras) {
+public class MenuListar {
+	public static void listar(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		boolean ficar = true;
 		while (ficar) {
 			System.out.println("2.1 - Listar Cliente (PF/PJ) por Seg.");
@@ -21,15 +16,29 @@ public enum MenuListar {
 			System.out.println("2.3 - Listar Sinistros por Cliente");
 			System.out.println("2.4 - Listar Veiculos por Cliente");
 			System.out.println("2.5 - Listar Veiculos por Seguradora");
-			System.out.println("2.6 - Voltar");
-			MenuListar op = getOpcao(getInt(sc, ""));
+			System.out.println("2.6 - Listar Seguros por Seguradora");
+			System.out.println("2.7 - Listar Seguros por Cliente");
+			System.out.println("2.8 - Listar Veiculos por Frota");
+			System.out.println("2.9 - Listar Frotas por Seguradora");
+			System.out.println("2.10 - Listar Frotas por Cliente");
+			System.out.println("2.11 - Listar Condutores");
+			System.out.println("2.12 - Listar Condutores por Seguro");
+			System.out.println("2.13 - Voltar");
+			int op = getInt(sc, "");
 			switch (op) {
-				case CLIENTES_SEG -> clientesSeg(sc, seguradoras);
-				case SINISTROS_SEG -> sinistrosSeg(sc, seguradoras);
-				case SINISTROS_CLIENTE -> sinistrosCliente(sc, seguradoras);
-				case VEICULOS_CLIENTE -> veiculosCliente(sc, seguradoras);
-				case VEICULOS_SEG -> veiculosSeg(sc, seguradoras);
-				case VOLTAR -> ficar = false;
+				case 1 -> clientesSeg(sc, seguradoras);
+				case 2 -> sinistrosSeg(sc, seguradoras);
+				case 3 -> sinistrosCliente(sc, seguradoras);
+				case 4 -> veiculosCliente(sc, seguradoras);
+				case 5 -> veiculosSeg(sc, seguradoras);
+				case 6 -> segurosSeg(sc, seguradoras);
+				case 7 -> segurosCliente(sc, seguradoras);
+				case 8 -> veiculosFrota(sc, seguradoras);
+				case 9 -> frotasSeg(sc, seguradoras);
+				case 10 -> frotasCliente(sc, seguradoras);
+				case 11 -> condutores(sc, condutores);
+				case 12 -> condutoresSeguro(sc, seguradoras, condutores);
+				case 13 -> ficar = false;
 				default -> System.out.println("Comando inválido.");
 			}
 		}
@@ -48,7 +57,8 @@ public enum MenuListar {
 		if (seg == null) {
 			return;
 		}
-		printIter(seg.getSinistros(), "Sinistro");
+		Iterable<Sinistro> sinistros = seg.getSeguros().stream().flatMap(s -> s.getSinistros().stream())::iterator;
+		printIter(sinistros, "Sinistro");
 	}
 
 	private static void sinistrosCliente(Scanner sc, Map<String, Seguradora> seguradoras) {
@@ -69,10 +79,18 @@ public enum MenuListar {
 			return;
 		}
 		Cliente cliente = getCliente(sc, seg);
+		Iterable<Veiculo> veiculos;
 		if (cliente == null) {
 			return;
+		} else if (cliente instanceof ClientePF c) {
+			veiculos = c.getVeiculos();
+		} else if (cliente instanceof ClientePJ c) {
+			veiculos = c.getFrotas().stream().flatMap(f -> f.getVeiculos().stream())::iterator;
+		} else {
+			// inalcansável
+			return;
 		}
-		printIter(cliente.getVeiculos(), "Veículo");
+		printIter(veiculos, "Veículo");
 	}
 
 	private static void veiculosSeg(Scanner sc, Map<String, Seguradora> seguradoras) {
@@ -80,30 +98,99 @@ public enum MenuListar {
 		if (seg == null) {
 			return;
 		}
-		Iterable<Veiculo> x = seg.getClientes().stream()
-			.flatMap(cliente -> cliente.getVeiculos().stream())::iterator;
+		Iterable<Veiculo> x = seg.getClientes().stream().flatMap(
+				c -> c instanceof ClientePF pf ? pf.getVeiculos().stream()
+						: ((ClientePJ) c).getFrotas().stream().flatMap(f -> f.getVeiculos().stream()))::iterator;
 		printIter(x, "Veículo");
 	}
 
-	public static MenuListar getOpcao(int index) {
-		return switch (index) {
-			case 1 -> CLIENTES_SEG;
-			case 2 -> SINISTROS_SEG;
-			case 3 -> SINISTROS_CLIENTE;
-			case 4 -> VEICULOS_CLIENTE;
-			case 5 -> VEICULOS_SEG;
-			case 6 -> VOLTAR;
-			default -> INVALIDO;
-		};
+	private static void segurosSeg(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		printIter(seg.getSeguros(), "Seguro");
 	}
 
-	final int index;
-
-	MenuListar(int index) {
-		this.index = index;
+	private static void segurosCliente(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		Cliente cliente = getCliente(sc, seg);
+		if (cliente == null) {
+			return;
+		}
+		printIter(seg.getSegurosPorCliente(cliente), "Seguro");
 	}
 
-	public int getIndex() {
-		return index;
+	private static void veiculosFrota(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		Cliente cliente = getCliente(sc, seg);
+		if (cliente == null) {
+			return;
+		} else if (cliente instanceof ClientePJ c) {
+			System.out.println("Escolha a frota.");
+			int i = getItem(sc, c.getFrotas(), "frota");
+			if (i < 0) {
+				System.out.println("Esse cliente não possui frotas.");
+				return;
+			}
+			Frota frota = c.getFrotas().get(i);
+			printIter(frota.getVeiculos(), "Veículo");
+		} else {
+			System.out.println("Somente clientes pj possuem frotas.");
+		}
+	}
+
+	private static void frotasSeg(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		Iterable<Frota> frotas = seg.listarClientes(Tipo.PJ).stream()
+				.flatMap(c -> ((ClientePJ) c).getFrotas().stream())::iterator;
+		printIter(frotas, "Frota");
+	}
+
+	private static void frotasCliente(Scanner sc, Map<String, Seguradora> seguradoras) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		Cliente cliente = getCliente(sc, seg);
+		if (cliente == null) {
+			return;
+		} else if (cliente instanceof ClientePJ c) {
+			printIter(c.getFrotas(), "Frota");
+		} else {
+			System.out.println("Somente clientes pj possuem frotas.");
+		}
+	}
+
+	private static void condutores(Scanner sc, Map<String, ICondutor> condutores) {
+		if (condutores.values().isEmpty()) {
+			System.out.println("Não há condutores registrados.");
+		} else {
+			printIter(condutores.values(), "Condutor");
+		}
+	}
+
+	private static void condutoresSeguro(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
+		Seguradora seg = getSeguradora(sc, seguradoras);
+		if (seg == null) {
+			return;
+		}
+		System.out.println("Escolha o seguro.");
+		int i = getItem(sc, seg.getSeguros(), "seguro");
+		if (i < 0) {
+			System.out.println("Não há seguros registrados.");
+			return;
+		}
+		Seguro seguro = seg.getSeguros().get(i);
+		printIter(seguro.getCondutores(), "Condutor");
 	}
 }

@@ -1,27 +1,25 @@
 package seguradora;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class Condutor {
+public class Condutor implements ICondutor {
 	private final String cpf;
 	private String nome, telefone, endereco, email;
 	private LocalDate dataNascimento;
-	private List<Sinistro> sinistros;
+	private List<Sinistro> sinistros = new ArrayList<>();
 
 	public Condutor(String cpf, String nome, String telefone, String endereco, String email, LocalDate dataNascimento,
-			List<Sinistro> sinistros) {
+			Collection<Sinistro> sinistros) {
 		this.cpf = cpf;
 		this.nome = nome;
 		this.telefone = telefone;
 		this.endereco = endereco;
 		this.email = email;
 		this.dataNascimento = dataNascimento;
-		this.sinistros = sinistros;
-	}
-
-	public boolean adicionarSinistro(Sinistro sinistro) {
-		return sinistros.add(sinistro);
+		this.sinistros.addAll(sinistros);
 	}
 
 	public String getCpf() {
@@ -74,6 +72,24 @@ public class Condutor {
 
 	@Override
 	public String toString() {
-		return "Condutor(Nome:" + nome + ", CPF:" + cpf + ", Nº sinistros: " + sinistros.size() + ")";
+		return mkString("Condutor(", ", ", ")");
 	}
+
+	@Override
+	public int hashCode() {
+		return cpf.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (obj instanceof ICondutor other) {
+			return cpf.equals(other.getCpf());
+		}
+		return false;
+	}
+
 }

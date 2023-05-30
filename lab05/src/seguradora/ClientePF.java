@@ -1,19 +1,22 @@
 package seguradora;
+
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class ClientePF extends Cliente {
+public final class ClientePF extends Cliente implements ICondutor {
 	private String educacao, genero, classeEconomica;
 	private final String cpf;
 	private LocalDate dataNascimento, dataLicenca;
 	private List<Veiculo> veiculos = new ArrayList<>();
+	private List<Sinistro> sinistros = new ArrayList<>();
 
-	public ClientePF(String nome, String endereco, Collection<Veiculo> veiculos, String educacao, String genero,
-			String classeEconomica, String cpf, LocalDate dataNascimento, LocalDate dataLicenca) {
-		super(nome, endereco);
+	public ClientePF(String nome, String telefone, String endereco, String email, Collection<Veiculo> veiculos,
+			String educacao, String genero,
+			String classeEconomica, String cpf, LocalDate dataNascimento, LocalDate dataLicenca,
+			Collection<Sinistro> sinistros) {
+		super(nome, telefone, endereco, email);
 		this.educacao = educacao;
 		this.genero = genero;
 		this.classeEconomica = classeEconomica;
@@ -21,6 +24,7 @@ public final class ClientePF extends Cliente {
 		this.dataNascimento = dataNascimento;
 		this.dataLicenca = dataLicenca;
 		this.veiculos.addAll(veiculos);
+		this.sinistros.addAll(sinistros);
 	}
 
 	public boolean cadastrarVeiculo(Veiculo veiculo) {
@@ -31,8 +35,10 @@ public final class ClientePF extends Cliente {
 		return veiculos.remove(veiculo);
 	}
 
-	public int getIdade() {
-		return Period.between(dataNascimento, LocalDate.now()).normalized().getYears();
+	
+	@Override
+	public Tipo getTipo() {
+		return Tipo.PF;
 	}
 
 	@Override
@@ -42,8 +48,7 @@ public final class ClientePF extends Cliente {
 
 	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {
-		return super.mkString(prefixo, sep, "") + sep + "Educacao: " + educacao + sep + "Gênero: " + genero + sep + "Classe econômica: " 
-		+ classeEconomica + sep + "CPF: " + cpf + sep + "Data de Nascimento: " + dataNascimento + sep + "Data da Licença: " + dataLicenca + sufixo;
+		return ICondutor.super.mkString(prefixo, sep, sep) + "Nº Veículos: " + veiculos.size() + sufixo;
 	}
 
 	public List<Veiculo> getVeiculos() {
@@ -69,6 +74,7 @@ public final class ClientePF extends Cliente {
 	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
+
 	public String getEducacao() {
 		return educacao;
 	}
@@ -94,6 +100,11 @@ public final class ClientePF extends Cliente {
 	}
 
 	@Override
+	public List<Sinistro> getSinistros() {
+		return sinistros;
+	}
+
+	@Override
 	public String toString() {
 		return "ClientePF [nome=" + nome + ", cpf=" + cpf + ", idade=" + getIdade() + "]";
 	}
@@ -109,9 +120,9 @@ public final class ClientePF extends Cliente {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ClientePF other = (ClientePF) obj;
-		return other != null && cpf.equals(other.cpf);
+		if (obj instanceof ICondutor other) {
+			return other != null && cpf.equals(other.getCpf());
+		}
+		return false;
 	}
 }

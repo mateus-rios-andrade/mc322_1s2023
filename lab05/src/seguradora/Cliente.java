@@ -1,15 +1,22 @@
 package seguradora;
+
 import java.util.List;
 
 public sealed abstract class Cliente implements MkString permits ClientePF, ClientePJ {
-	enum Tipo { PF, PJ; }
-
-	protected String nome, endereco;
-
-	public Cliente(String nome, String endereco) {
-		this.nome = nome;
-		this.endereco = endereco;
+	enum Tipo {
+		PF, PJ;
 	}
+
+	protected String nome, telefone, endereco, email;
+
+	public Cliente(String nome, String telefone, String endereco, String email) {
+		this.nome = nome;
+		this.telefone = telefone;
+		this.endereco = endereco;
+		this.email = email;
+	}
+
+	public abstract Tipo getTipo();
 
 	public abstract String getID();
 
@@ -28,7 +35,7 @@ public sealed abstract class Cliente implements MkString permits ClientePF, Clie
 
 	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {
-		return prefixo + "Nome: " + nome + sep + "Endereco: " + endereco + sufixo;
+		return prefixo + "Nome: " + nome + sufixo;
 	}
 
 	public String getNome() {
@@ -37,6 +44,22 @@ public sealed abstract class Cliente implements MkString permits ClientePF, Clie
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getEndereco() {
