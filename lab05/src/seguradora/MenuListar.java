@@ -7,7 +7,13 @@ import seguradora.Cliente.Tipo;
 
 import static seguradora.Utils.*;
 
+/**
+ * Agrupa as funções do submenu listar.
+ */
 public class MenuListar {
+	/**
+	 * Mantém o loop do submenu.
+	 */
 	public static void listar(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		boolean ficar = true;
 		while (ficar) {

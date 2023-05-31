@@ -3,6 +3,9 @@ package seguradora;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Representa um seguro de um Cliente PF.
+ */
 public final class SeguroPF extends Seguro {
 	private ClientePF cliente;
 	private Veiculo veiculo;
@@ -15,6 +18,7 @@ public final class SeguroPF extends Seguro {
 		setValorMensal(calcularValor());
 	}
 
+	
 	@Override
 	public double calcularValor() {
 		long qtdVeiculos = getSeguradora().getSeguros().stream()

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Representa uma frota de uma empresa.
+ */
 public class Frota implements MkString {
 	private final String code;
 	private String nome;
@@ -54,7 +57,7 @@ public class Frota implements MkString {
 
 	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {
-		return prefixo + "Código: " + code + sep + ", Nº veículos=" + veiculos.size() + sufixo;
+		return prefixo + "Código: " + code + sep + "Nome: " + nome + sep + "Nº veículos=" + veiculos.size() + sufixo;
 	}
 
 }

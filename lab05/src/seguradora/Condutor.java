@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Representa um condutor que não é cliente.
+ */
 public class Condutor implements ICondutor {
 	private final String cpf;
 	private String nome, telefone, endereco, email;

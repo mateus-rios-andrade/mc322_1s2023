@@ -1,13 +1,17 @@
 package seguradora;
 
-import java.util.List;
-
+/**
+ * Define a base de um cliente no sistema.
+ */
 public sealed abstract class Cliente implements MkString permits ClientePF, ClientePJ {
+	/*
+	 * Representa o tipo de um cliente.
+	 */
 	enum Tipo {
 		PF, PJ;
 	}
 
-	protected String nome, telefone, endereco, email;
+	private String nome, telefone, endereco, email;
 
 	public Cliente(String nome, String telefone, String endereco, String email) {
 		this.nome = nome;
@@ -18,20 +22,10 @@ public sealed abstract class Cliente implements MkString permits ClientePF, Clie
 
 	public abstract Tipo getTipo();
 
+	/**
+	 * Retorna a identifcação única de cada cliente no formato de string.
+	 */
 	public abstract String getID();
-
-	protected static String formatarVeiculos(List<Veiculo> veiculos, String sep) {
-		String str = "[";
-		boolean primeiro = true;
-		for (Veiculo veiculo : veiculos) {
-			if (!primeiro) {
-				str += sep;
-			}
-			str += veiculo;
-			primeiro = false;
-		}
-		return str + "]";
-	}
 
 	@Override
 	public String mkString(String prefixo, String sep, String sufixo) {

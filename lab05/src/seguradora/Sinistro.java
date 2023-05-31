@@ -2,6 +2,9 @@ package seguradora;
 
 import java.time.LocalDate;
 
+/**
+ * Representa um sinistro associado à um condutor.
+ */
 public class Sinistro implements MkString {
 	private final int id;
 	private LocalDate data;

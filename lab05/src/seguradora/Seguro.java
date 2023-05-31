@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Representa um seguro qualquer no sistema.
+ */
 public sealed abstract class Seguro implements MkString permits SeguroPF, SeguroPJ {
 	private final int id;
 	private LocalDate dataInicio, dataFim;
@@ -61,6 +64,9 @@ public sealed abstract class Seguro implements MkString permits SeguroPF, Seguro
 		return condutores.stream().mapToInt(c -> c.getSinistros().size()).sum();
 	}
 
+	/**
+	 * Calcula o valor do seguro considerando os fatores dados.
+	 */
 	public abstract double calcularValor();
 
 	public abstract Cliente getCliente();

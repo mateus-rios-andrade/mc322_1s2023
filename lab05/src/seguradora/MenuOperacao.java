@@ -7,7 +7,13 @@ import java.util.Scanner;
 
 import static seguradora.Utils.*;
 
+/**
+ * Agrupa as operações do submenu principal.
+ */
 public class MenuOperacao {
+	/**
+	 * Mantém o loop do menu principal.
+	 */
 	public static void menuPrincipal(Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		Scanner sc = new Scanner(System.in);
 		boolean ficar = true;

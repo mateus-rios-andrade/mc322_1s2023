@@ -3,6 +3,9 @@ package seguradora;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Representa um seguro de um cliente PJ
+ */
 public final class SeguroPJ extends Seguro {
 	private ClientePJ cliente;
 	private Frota frota;

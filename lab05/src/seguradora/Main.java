@@ -14,6 +14,9 @@ public class Main {
 		interativo(seguradoras, condutores);
 	}
 
+	/**
+	 * Função que inicializa o estado inicial do programa e realiza testes.
+	 */
 	private static void teste(Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		seguradoras.put("teste", new Seguradora("teste", "1936457845", "teste@teste.com", "Rua teste, 66"));
 		Seguradora seguradora = seguradoras.get("teste");
@@ -84,6 +87,9 @@ public class Main {
 		System.out.printf("Receita da seguradora: %.2f\n", seguradora.calcularReceita());
 	}
 
+	/**
+	 * Função que inicia o menu interativo.
+	 */
 	private static void interativo(Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		System.out.println("Bem vindo ao menu interativo.");
 		MenuOperacao.menuPrincipal(seguradoras, condutores);

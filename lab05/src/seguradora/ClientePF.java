@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Representa uma pessoa física que também é cliente. Implementa ICondutor para
+ * poder ser considerado também um condutor dentro do sistema sem ter que ser representado
+ * por dois objetos diferentes.
+ */
 public final class ClientePF extends Cliente implements ICondutor {
 	private String educacao, genero, classeEconomica;
 	private final String cpf;
@@ -27,10 +32,16 @@ public final class ClientePF extends Cliente implements ICondutor {
 		this.sinistros.addAll(sinistros);
 	}
 
+	/**
+	 * Cadastra um veículo. 
+	 */
 	public boolean cadastrarVeiculo(Veiculo veiculo) {
 		return veiculos.add(veiculo);
 	}
 
+	/**
+	 * Remove um veículo cadastrado.
+	 */
 	public boolean removerVeiculo(Veiculo veiculo) {
 		return veiculos.remove(veiculo);
 	}
@@ -106,7 +117,7 @@ public final class ClientePF extends Cliente implements ICondutor {
 
 	@Override
 	public String toString() {
-		return "ClientePF [nome=" + nome + ", cpf=" + cpf + ", idade=" + getIdade() + "]";
+		return "ClientePF [nome=" + getNome() + ", cpf=" + cpf + ", idade=" + getIdade() + "]";
 	}
 
 	@Override

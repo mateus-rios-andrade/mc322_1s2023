@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
+/**
+ * Representa um cliente de tipo PJ no sistema.
+ */
 public final class ClientePJ extends Cliente {
 	private final String cnpj;
 	private LocalDate dataFundacao;
@@ -77,7 +80,7 @@ public final class ClientePJ extends Cliente {
 
 	@Override
 	public String toString() {
-		return "ClientePJ [nome=" + nome + ", cnpj=" + cnpj + ", Nº funcionários=" + qtdFuncionarios +  "]";
+		return "ClientePJ [nome=" + getNome() + ", cnpj=" + cnpj + ", Nº funcionários=" + qtdFuncionarios +  "]";
 	}
 
 	@Override

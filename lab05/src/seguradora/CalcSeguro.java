@@ -1,4 +1,9 @@
 package seguradora;
+
+
+/**
+ * Define constantes e métodos auxiliares para o cálculo do valor do seguro.
+ */
 public enum CalcSeguro {
 	VALOR_BASE(10.0),
 	FATOR_18_30(1.2),

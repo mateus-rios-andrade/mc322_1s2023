@@ -2,6 +2,9 @@ package seguradora;
 
 import java.util.regex.Pattern;
 
+/**
+ * Agrupa funções de validação.
+ */
 public class Validacao {
 	/**
 	 * Esse método supõe que 'letra' significa qualquer caractere considerado como tal pelo

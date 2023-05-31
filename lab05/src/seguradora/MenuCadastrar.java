@@ -7,7 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Classe que agrupa os métodos referentes ao submenu cadastrar.
+ */
 public class MenuCadastrar {
+	/**
+	 * Mantém o loop do submenu e as rotas de navegação.
+	 */
 	public static void cadastrar(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		boolean ficar = true;
 		while (ficar) {
@@ -45,7 +51,6 @@ public class MenuCadastrar {
 				getDate(sc, "Data de Nascimento: "),
 				Collections.emptyList());
 		condutores.put(cpf, condutor);
-
 	}
 
 	private static void cliente(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {

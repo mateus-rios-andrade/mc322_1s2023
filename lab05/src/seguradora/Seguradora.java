@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * Representa uma seguradora no sistema.
+ */
 public class Seguradora {
 	private String nome, telefone, email, endereco;
 	private final List<Cliente> clientes;
@@ -38,6 +41,9 @@ public class Seguradora {
 		return seguros.stream().mapToDouble(Seguro::getValorMensal).sum();
 	}
 
+	/**
+	 * Cadastra e valida um cliente.
+	 */
 	public boolean cadastrarCliente(Cliente cliente) {
 		if (!Validacao.validarNome(cliente.getNome())
 				|| cliente instanceof ClientePF c && (c.getIdade() < 18 || c.getIdade() > 90)) {
@@ -50,6 +56,9 @@ public class Seguradora {
 		return clientes.add(cliente);
 	}
 
+	/**
+	 * Remove um cliente e mantém o estado da seguradora consistente.
+	 */
 	public boolean removerCliente(Cliente cliente) {
 		seguros.removeIf(s -> s.getCliente().equals(cliente));
 		return clientes.remove(cliente);
@@ -68,15 +77,16 @@ public class Seguradora {
 				.forEach(s -> ((SeguroPJ) s).setCliente(clienteNovo));
 	}
 
+	/**
+	 * Troca todos os seguros de um cliente para outro.
+	 */
 	public void trocarCliente(Cliente clienteAntigo, Cliente clienteNovo) {
-		if (cadastrarCliente(clienteNovo)) {
-			clientes.remove(clienteAntigo);
+		if (cadastrarCliente(clienteNovo) && clientes.remove(clienteAntigo)) {
 			if (clienteAntigo instanceof ClientePF) {
 				finalizarTroca((ClientePF) clienteAntigo, (ClientePF) clienteNovo);
 			} else {
 				finalizarTroca((ClientePJ) clienteAntigo, (ClientePJ) clienteNovo);
 			}
-
 		}
 	}
 
@@ -129,6 +139,10 @@ public class Seguradora {
 		return seguro.adicionarSinistro(sinistro, condutor);
 	}
 
+	/**
+	 * Printa na tela todos os sinistros associados aos seguros associados a um cliente.
+	 * Equivalente a getSinistrosPorCliente(cliente).forEach(System.out::println).
+	 */
 	public void visualizarSinistro(Cliente cliente) {
 		seguros.stream()
 				.filter(sinistro -> sinistro.getCliente().equals(cliente))

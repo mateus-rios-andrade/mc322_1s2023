@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
+/**
+ * Interface que permite que objetos sejam condutores.
+ */
 public interface ICondutor extends MkString {
 	default boolean adicionarSinistro(Sinistro sinistro) {
 		if (getSinistros().stream().allMatch(s -> s.getId() != sinistro.getId())) {

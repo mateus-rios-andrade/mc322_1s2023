@@ -1,5 +1,8 @@
 package seguradora;
 
+/**
+ * Representa um Veículo que pode ser associado a uma frota ou a um cliente.
+ */
 public class Veiculo implements MkString {
 
 	private String placa, marca, modelo;

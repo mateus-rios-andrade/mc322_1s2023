@@ -5,7 +5,13 @@ import java.util.Map;
 import java.util.Scanner;
 import static seguradora.Utils.*;
 
+/**
+ * Agrupa funções do submenu excluir.
+ */
 public class MenuExcluir {
+	/**
+	 * Mantém o loop do submenu.
+	 */
 	public static void excluir(Scanner sc, Map<String, Seguradora> seguradoras, Map<String, ICondutor> condutores) {
 		boolean ficar = true;
 		while (ficar) {

@@ -10,8 +10,11 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
+/**
+ * Define várias funções úteis em geral, com ênfase em abstrair as operações
+ * de input e output do menu.
+ */
 public class Utils {
-
 	public static List<Veiculo> getVeiculos(Scanner sc) {
 		int nVeiculos = getInt(sc, "Qtd. de veículos a registrar: ");
 		var veiculos = new ArrayList<Veiculo>();
