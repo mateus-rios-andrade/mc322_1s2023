@@ -1,12 +1,14 @@
 package csv;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class CSV {
 	private final List<List<String>> dados;
@@ -16,7 +18,15 @@ public class CSV {
 	}
 
 	public static void main(String[] args) {
-		
+		CSV.deArquivo("dados/clientesPF.csv").gravarEm("teste.csv");
+	}
+
+	public static CSV deDados(List<List<Object>> dados) {
+		return new CSV(
+				dados.stream()
+						.map(l -> l.stream()
+								.map(o -> o.toString()).toList())
+						.toList());
 	}
 
 	public static CSV deArquivo(String nomeArquivo) {
@@ -40,6 +50,7 @@ public class CSV {
 						if (aspas) {
 							if (contrabarra) {
 								chars.add(chr);
+								contrabarra = false;
 							} else if (chr == '"') {
 								aspas = false;
 							} else if (chr == '\\') {
@@ -66,9 +77,46 @@ public class CSV {
 			}
 			return new CSV(dados);
 		} catch (FileNotFoundException e) {
+			throw new ReadCSVException("Arquivo " + nomeArquivo + " não encontrado.", e);
 		} catch (IOException e) {
+			throw new ReadCSVException("Erro de IO com mensagem: " + e.getMessage(), e);
 		}
-		return null; // não
+	}
+
+	public void gravarEm(String nomeArquivo) {
+		try (var fw = new FileWriter(nomeArquivo, StandardCharsets.UTF_8, false);
+				var writer = new BufferedWriter(fw)) {
+			for (List<String> linha : dados) {
+				boolean primeiraVez = true;
+				for (String dado : linha) {
+					if (primeiraVez) {
+						primeiraVez = false;
+					} else {
+						writer.append(',');
+					}
+					String str;
+					if (dado.contains("\"") || dado.contains(",")) {
+						var charArray = dado.toCharArray();
+						var sb = new StringBuilder(charArray.length + 10);
+						sb.append('"');
+						for (char chr : charArray) {
+							if (chr == '\\' || chr == '"') {
+								sb.append('\\');
+							}
+							sb.append(chr);
+						}
+						str = sb.toString();
+					} else {
+						str = dado;
+					}
+					writer.append(str);
+				}
+				writer.newLine();
+			}
+
+		} catch (IOException e) {
+			// TODO: handle exception
+		}
 	}
 
 	public List<List<String>> getDados() {

@@ -1,6 +1,7 @@
 {
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
+    "java.debug.settings.vmArgs": "-Dfile.encoding=UTF-8",
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
     ]
