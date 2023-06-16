@@ -17,10 +17,6 @@ public class CSV {
 		this.dados = dados;
 	}
 
-	public static void main(String[] args) {
-		CSV.deArquivo("dados/clientesPF.csv").gravarEm("teste.csv");
-	}
-
 	public static CSV deDados(List<List<Object>> dados) {
 		return new CSV(
 				dados.stream()
@@ -115,7 +111,7 @@ public class CSV {
 			}
 
 		} catch (IOException e) {
-			// TODO: handle exception
+			
 		}
 	}
 
