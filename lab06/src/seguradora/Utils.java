@@ -15,6 +15,8 @@ import java.util.function.Predicate;
  * de input e output do menu.
  */
 public class Utils {
+	public static final DateTimeFormatter formatoPadrao = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
 	public static List<Veiculo> getVeiculos(Scanner sc) {
 		int nVeiculos = getInt(sc, "Qtd. de veículos a registrar: ");
 		var veiculos = new ArrayList<Veiculo>();

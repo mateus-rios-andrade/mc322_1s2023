@@ -7,8 +7,8 @@ import java.util.List;
 
 /**
  * Representa uma pessoa física que também é cliente. Implementa ICondutor para
- * poder ser considerado também um condutor dentro do sistema sem ter que ser representado
- * por dois objetos diferentes.
+ * poder ser considerado também um condutor dentro do sistema sem ter que ser
+ * representado por dois objetos diferentes.
  */
 public final class ClientePF extends Cliente implements ICondutor {
 	private String educacao, genero, classeEconomica;
@@ -17,9 +17,18 @@ public final class ClientePF extends Cliente implements ICondutor {
 	private List<Veiculo> veiculos = new ArrayList<>();
 	private List<Sinistro> sinistros = new ArrayList<>();
 
-	public ClientePF(String nome, String telefone, String endereco, String email, Collection<Veiculo> veiculos,
-			String educacao, String genero,
-			String classeEconomica, String cpf, LocalDate dataNascimento, LocalDate dataLicenca,
+	public ClientePF(
+			String nome,
+			String telefone,
+			String endereco,
+			String email,
+			Collection<Veiculo> veiculos,
+			String educacao,
+			String genero,
+			String classeEconomica,
+			String cpf,
+			LocalDate dataNascimento,
+			LocalDate dataLicenca,
 			Collection<Sinistro> sinistros) {
 		super(nome, telefone, endereco, email);
 		this.educacao = educacao;
@@ -33,7 +42,7 @@ public final class ClientePF extends Cliente implements ICondutor {
 	}
 
 	/**
-	 * Cadastra um veículo. 
+	 * Cadastra um veículo.
 	 */
 	public boolean cadastrarVeiculo(Veiculo veiculo) {
 		return veiculos.add(veiculo);
@@ -46,7 +55,6 @@ public final class ClientePF extends Cliente implements ICondutor {
 		return veiculos.remove(veiculo);
 	}
 
-	
 	@Override
 	public Tipo getTipo() {
 		return Tipo.PF;

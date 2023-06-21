@@ -12,27 +12,29 @@ import java.util.List;
 
 public class CSV {
 	private final List<List<String>> dados;
+	private final String header;
 
-	private CSV(List<List<String>> dados) {
+	private CSV(List<List<String>> dados, String header) {
 		this.dados = dados;
+		this.header = header;
 	}
 
-	public static CSV deDados(List<List<Object>> dados) {
+	public static CSV deDados(List<List<String>> dados, String header) {
 		return new CSV(
-				dados.stream()
-						.map(l -> l.stream()
-								.map(o -> o.toString()).toList())
-						.toList());
+				dados,
+				header);
 	}
 
-	public static CSV deArquivo(String nomeArquivo) {
+	public static CSV deArquivo(String nomeArquivo, boolean hasHeader) {
 		try (FileReader fr = new FileReader(nomeArquivo);
 				BufferedReader br = new BufferedReader(fr)) {
 			String l;
-			boolean primeiraLinha = true;
+			boolean primeiraLinha = hasHeader;
+			String header = "";
 			var dados = new ArrayList<List<String>>();
 			while ((l = br.readLine()) != null) {
 				if (primeiraLinha) {
+					header = l;
 					primeiraLinha = false;
 				} else {
 					List<String> a = new ArrayList<>();
@@ -71,7 +73,7 @@ public class CSV {
 					}
 				}
 			}
-			return new CSV(dados);
+			return new CSV(dados, header);
 		} catch (FileNotFoundException e) {
 			throw new ReadCSVException("Arquivo " + nomeArquivo + " não encontrado.", e);
 		} catch (IOException e) {
@@ -79,43 +81,57 @@ public class CSV {
 		}
 	}
 
+	private static String formatar(String str) {
+		if (str.contains("\"") || str.contains(",")) {
+			var charArray = str.toCharArray();
+			var sb = new StringBuilder(charArray.length + 8);
+			sb.append('"');
+			for (char chr : charArray) {
+				if (chr == '\\' || chr == '"') {
+					sb.append('\\');
+				}
+				sb.append(chr);
+			}
+			return sb.toString();
+		} else {
+			return str;
+		}
+	}
+
+	private static void escrever(List<List<String>> dados, Appendable a) throws IOException {
+		for (List<String> linha : dados) {
+			boolean primeiraVez = true;
+			for (String dado : linha) {
+				if (primeiraVez) {
+					primeiraVez = false;
+				} else {
+					a.append(',');
+				}
+				String str = formatar(dado);
+				a.append(str);
+			}
+			a.append(System.lineSeparator());
+		}
+	}
+
 	public void gravarEm(String nomeArquivo) {
 		try (var fw = new FileWriter(nomeArquivo, StandardCharsets.UTF_8, false);
 				var writer = new BufferedWriter(fw)) {
-			for (List<String> linha : dados) {
-				boolean primeiraVez = true;
-				for (String dado : linha) {
-					if (primeiraVez) {
-						primeiraVez = false;
-					} else {
-						writer.append(',');
-					}
-					String str;
-					if (dado.contains("\"") || dado.contains(",")) {
-						var charArray = dado.toCharArray();
-						var sb = new StringBuilder(charArray.length + 10);
-						sb.append('"');
-						for (char chr : charArray) {
-							if (chr == '\\' || chr == '"') {
-								sb.append('\\');
-							}
-							sb.append(chr);
-						}
-						str = sb.toString();
-					} else {
-						str = dado;
-					}
-					writer.append(str);
-				}
+			if (header != "") {
+				writer.append(header);
 				writer.newLine();
 			}
-
+			escrever(dados, writer);
 		} catch (IOException e) {
-			
+			throw new WriteCSVException("Erro ao gravar arquivo. Msg: " + e.getMessage(), e);
 		}
 	}
 
 	public List<List<String>> getDados() {
 		return dados;
+	}
+
+	public String getHeader() {
+		return header;
 	}
 }

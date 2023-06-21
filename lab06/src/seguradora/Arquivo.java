@@ -1,8 +1,12 @@
 package seguradora;
 
-public interface Arquivo {
+import java.util.List;
+
+public interface Arquivo<T> {
 	boolean gerarArquivo();
-	String lerArquivo();
+	List<T> lerArquivo();
 
 	String getNome();
+
+	List<T> getObjetos();
 }
