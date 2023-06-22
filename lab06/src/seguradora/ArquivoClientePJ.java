@@ -1,8 +1,10 @@
 package seguradora;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public class ArquivoClientePJ implements Arquivo<ClientePJ> {
 							l.get(2),
 							l.get(3),
 							l.get(4),
-							List.of(frotas.get(l.get(6))),
+							Optional.ofNullable(frotas.get(l.get(6))).stream().toList(),
 							l.get(0),
 							LocalDate.parse(l.get(5), Utils.formatoPadrao),
 							new Random().nextInt() % 100))
@@ -45,10 +47,14 @@ public class ArquivoClientePJ implements Arquivo<ClientePJ> {
 			return objetos;
 		} catch (ReadCSVException e) {
 			System.err.println(e.getMessage());
-			return null;
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println("Uma linha possui menos entradas do que o necessário.");
+		} catch (DateTimeParseException e) {
+			System.err.printf("Erro: string %s não representa uma data válida.%n", e.getParsedString());
+		} catch (NullPointerException e) {
+			System.err.println("Arquivo possui entrada inválida na coluna");
 		}
+		return null;
 	}
 
 	@Override

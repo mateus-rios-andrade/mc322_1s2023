@@ -41,6 +41,7 @@ public class ArquivoClientePF implements Arquivo<ClientePF> {
 							l.get(4),
 							Arrays.stream(l.get(8).split(";"))
 									.map(veiculos::get)
+									.filter(v -> v != null)
 									.toList(),
 							l.get(6),
 							l.get(5),
@@ -48,7 +49,8 @@ public class ArquivoClientePF implements Arquivo<ClientePF> {
 							l.get(0),
 							LocalDate.parse(l.get(7), Utils.formatoPadrao),
 							LocalDate.of(2000, 1, 1),
-							Collections.emptyList()))
+							Collections.emptyList()
+					))
 					.filter(c -> Validacao.validarCPF(c.getCpf()))
 					.filter(c -> Validacao.validarNome(c.getNome()))
 					.toList();
@@ -57,6 +59,8 @@ public class ArquivoClientePF implements Arquivo<ClientePF> {
 			System.err.printf("Erro: string %s não representa uma data válida.%n", e.getParsedString());
 		} catch (IndexOutOfBoundsException e) {
 			System.err.println("Uma linha possui menos entradas do que o necessário.");
+		} catch (ReadCSVException e) {
+			System.err.println(e.getMessage());
 		}
 		return null;
 	}
