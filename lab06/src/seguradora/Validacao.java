@@ -23,7 +23,7 @@ public class Validacao {
 			soma += m * digitos[i];
 		}
 		int primeiroDigito = 11 - (soma % 11);
-		if (primeiroDigito == 10)
+		if (primeiroDigito >= 10)
 			primeiroDigito = 0;
 		if (primeiroDigito != digitos[9])
 			return false;
@@ -33,7 +33,7 @@ public class Validacao {
 			soma += m * digitos[i];
 		}
 		int segundoDigito = 11 - (soma % 11);
-		if (segundoDigito == 10)
+		if (segundoDigito >= 10)
 			segundoDigito = 0;
 		if (segundoDigito != digitos[10])
 			return false;

@@ -29,6 +29,53 @@ public class Seguradora {
 		seguros = new ArrayList<>();
 	}
 
+	public List<Condutor> lerDados() {
+		List<Veiculo> veiculos = new ArquivoVeiculo("dados/veiculos.csv").lerArquivo();
+		if (veiculos == null) {
+			return null;
+		}
+		List<Condutor> condutores = new ArquivoCondutor("dados/condutores.csv").lerArquivo();
+		if (condutores == null) {
+			return null;
+		}
+		List<Frota> frotas = new ArquivoFrota("dados/frotas.csv", veiculos).lerArquivo();
+		if (frotas == null) {
+			return null;
+		}
+		List<ClientePF> clientesPF = new ArquivoClientePF("dados/clientesPF.csv", veiculos).lerArquivo();
+		if (clientesPF == null) {
+			return null;
+		}
+		List<ClientePJ> clientesPJ = new ArquivoClientePJ("dados/clientesPJ.csv", frotas).lerArquivo();
+		if (clientesPJ == null) {
+			return null;
+		}
+		clientes.clear();
+		seguros.clear();
+		clientes.addAll(clientesPF);
+		clientes.addAll(clientesPJ);
+		return condutores;
+	}
+
+	public void gravarDados() {
+		List<Sinistro> sinistros = listarSinistros();
+		var arquivoSinistros = new ArquivoSinistro("dados/sinistros.csv", sinistros);
+		arquivoSinistros.gerarArquivo(false);
+		List<SeguroPF> segurosPF = new ArrayList<>();
+		List<SeguroPJ> segurosPJ = new ArrayList<>();
+		for (Seguro seguro : seguros) {
+			if (seguro instanceof SeguroPF s) {
+				segurosPF.add(s);
+			} else {
+				segurosPJ.add((SeguroPJ)seguro);
+			}
+		}
+		var arquivoSegurosPF = new ArquivoSeguroPF("dados/seguros.csv", segurosPF);
+		var arquivoSegurosPJ = new ArquivoSeguroPJ("dados/seguros.csv", segurosPJ);
+		arquivoSegurosPF.gerarArquivo(false);
+		arquivoSegurosPJ.gerarArquivo(true);
+	}
+
 	public int nClientes() {
 		return clientes.size();
 	}
@@ -140,7 +187,8 @@ public class Seguradora {
 	}
 
 	/**
-	 * Printa na tela todos os sinistros associados aos seguros associados a um cliente.
+	 * Printa na tela todos os sinistros associados aos seguros associados a um
+	 * cliente.
 	 * Equivalente a getSinistrosPorCliente(cliente).forEach(System.out::println).
 	 */
 	public void visualizarSinistro(Cliente cliente) {

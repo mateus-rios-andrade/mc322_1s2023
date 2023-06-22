@@ -3,7 +3,7 @@ package seguradora;
 import java.util.List;
 
 public interface Arquivo<T> {
-	boolean gerarArquivo();
+	boolean gerarArquivo(boolean append);
 	List<T> lerArquivo();
 
 	String getNome();

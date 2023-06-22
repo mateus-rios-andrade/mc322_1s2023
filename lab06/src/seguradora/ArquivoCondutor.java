@@ -18,23 +18,7 @@ public class ArquivoCondutor implements Arquivo<Condutor> {
 	}
 
 	@Override
-	public boolean gerarArquivo() {
-		try {
-			csv = CSV.deDados(
-					objetos.stream()
-							.map(c -> List.of(
-									c.getCpf(),
-									c.getNome(),
-									c.getTelefone(),
-									c.getEndereco(),
-									c.getEmail(),
-									c.getDataNascimento().format(Utils.formatoPadrao)))
-							.toList(),
-					csv.getHeader());
-			return true;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+	public boolean gerarArquivo(boolean append) {
 		return false;
 	}
 
@@ -51,6 +35,8 @@ public class ArquivoCondutor implements Arquivo<Condutor> {
 							l.get(4),
 							LocalDate.parse(l.get(5), Utils.formatoPadrao),
 							Collections.emptyList()))
+					.filter(c -> Validacao.validarCPF(c.getCpf()))
+					.filter(c -> Validacao.validarNome(c.getNome()))
 					.toList();
 			return objetos;
 		} catch (DateTimeParseException e) {

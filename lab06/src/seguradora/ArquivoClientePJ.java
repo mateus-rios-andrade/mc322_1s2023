@@ -1,7 +1,9 @@
 package seguradora;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,41 +22,41 @@ public class ArquivoClientePJ implements Arquivo<ClientePJ> {
 	}
 
 	@Override
-	public boolean gerarArquivo() {
-		try {
-			csv = CSV.deDados(
-					objetos.stream()
-							.map(c -> List.of(
-									c.getCnpj(),
-									c.getNome(),
-									c.getTelefone(),
-									c.getEndereco(),
-									c.getEmail(),
-									c.getDataFundacao().format(Utils.formatoPadrao)))
-							.toList(),
-					csv.getHeader());
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+	public boolean gerarArquivo(boolean append) {
 		return false;
 	}
 
 	@Override
 	public List<ClientePJ> lerArquivo() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'lerArquivo'");
+		try {
+			csv = CSV.deArquivo(nome, true);
+			objetos = csv.getDados().stream()
+					.map(l -> new ClientePJ(
+							l.get(1),
+							l.get(2),
+							l.get(3),
+							l.get(4),
+							List.of(frotas.get(l.get(6))),
+							l.get(0),
+							LocalDate.parse(l.get(5), Utils.formatoPadrao),
+							new Random().nextInt() % 100))
+					.filter(c -> Validacao.validarCNPJ(c.getCnpj()))
+					.toList();
+			return objetos;
+		} catch (ReadCSVException e) {
+			System.err.println(e.getMessage());
+			return null;
+		}
 	}
 
 	@Override
 	public String getNome() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getNome'");
+		return nome;
 	}
 
 	@Override
 	public List<ClientePJ> getObjetos() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getObjetos'");
+		return objetos;
 	}
 
 }

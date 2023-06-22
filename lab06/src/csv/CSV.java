@@ -37,8 +37,8 @@ public class CSV {
 					header = l;
 					primeiraLinha = false;
 				} else {
-					List<String> a = new ArrayList<>();
-					dados.add(a);
+					List<String> atual = new ArrayList<>();
+					dados.add(atual);
 					List<Character> chars = new ArrayList<>();
 					boolean aspas = false;
 					boolean contrabarra = false;
@@ -64,13 +64,18 @@ public class CSV {
 								for (char c : chars) {
 									sb.append(c);
 								}
-								a.add(sb.toString());
+								atual.add(sb.toString());
 								chars.clear();
 							} else {
 								chars.add(chr);
 							}
 						}
 					}
+					var sb = new StringBuilder(chars.size());
+					for (char c : chars) {
+						sb.append(c);
+					}
+					atual.add(sb.toString());
 				}
 			}
 			return new CSV(dados, header);
@@ -114,10 +119,10 @@ public class CSV {
 		}
 	}
 
-	public void gravarEm(String nomeArquivo) {
-		try (var fw = new FileWriter(nomeArquivo, StandardCharsets.UTF_8, false);
+	public void gravarEm(String nomeArquivo, boolean append) {
+		try (var fw = new FileWriter(nomeArquivo, StandardCharsets.UTF_8, append);
 				var writer = new BufferedWriter(fw)) {
-			if (header != "") {
+			if (header != "" && !append) {
 				writer.append(header);
 				writer.newLine();
 			}

@@ -25,25 +25,8 @@ public class ArquivoClientePF implements Arquivo<ClientePF> {
 	}
 
 	@Override
-	public boolean gerarArquivo() {
-		try {
-			csv = CSV.deDados(
-					objetos.stream()
-							.map(c -> List.of(
-									c.getCpf(), c.getNome(), c.getTelefone(), c.getEndereco(), c.getEmail(),
-									c.getGenero(),
-									c.getDataNascimento().format(Utils.formatoPadrao),
-									c.getVeiculos().stream()
-											.map(v -> v.getPlaca())
-											.reduce((str1, str2) -> str1 + ";" + str2).orElse("")))
-							.toList(),
-					csv.getHeader());
-			csv.gravarEm(nome);
-			return true;
-		} catch (CSVException e) {
-			System.err.println("Erro ao gravar o arquivo " + nome + ".");
-			return false;
-		}
+	public boolean gerarArquivo(boolean append) {
+		return false;
 	}
 
 	@Override
@@ -66,6 +49,8 @@ public class ArquivoClientePF implements Arquivo<ClientePF> {
 							LocalDate.parse(l.get(7), Utils.formatoPadrao),
 							LocalDate.of(2000, 1, 1),
 							Collections.emptyList()))
+					.filter(c -> Validacao.validarCPF(c.getCpf()))
+					.filter(c -> Validacao.validarNome(c.getNome()))
 					.toList();
 			return objetos;
 		} catch (DateTimeParseException e) {

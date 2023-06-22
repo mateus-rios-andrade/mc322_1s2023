@@ -20,17 +20,6 @@ public class ArquivoFrota implements Arquivo<Frota> {
 		csv = CSV.deArquivo(nome, true);
 	}
 
-	private List<List<String>> serializar() {
-		List<List<String>> lista = new ArrayList<>(objetos.size());
-		for (Frota frota : objetos) {
-			List<String> linha = new ArrayList<>();
-			linha.add(frota.getCode());
-			linha.addAll(frota.getVeiculos().stream().map(Veiculo::getPlaca).toList());
-			lista.add(linha);
-		}
-		return lista;
-	}
-
 	private List<Frota> deserializar(List<List<String>> dados) {
 		List<Frota> lista = new ArrayList<>(dados.size());
 		for (List<String> linha : dados) {
@@ -38,20 +27,13 @@ public class ArquivoFrota implements Arquivo<Frota> {
 			List<Veiculo> vs = linha.subList(1, linha.size()).stream()
 					.map(veiculos::get)
 					.toList();
-			lista.add(new Frota(code, vs));
+			lista.add(new Frota(code, code, vs));
 		}
 		return lista;
 	}
 
 	@Override
-	public boolean gerarArquivo() {
-		try {
-			csv = CSV.deDados(serializar(), csv.getHeader());
-			csv.gravarEm(nome);
-			return true;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+	public boolean gerarArquivo(boolean append) {
 		return false;
 	}
 

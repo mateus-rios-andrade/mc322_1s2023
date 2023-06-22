@@ -15,7 +15,21 @@ import java.util.function.Predicate;
  * de input e output do menu.
  */
 public class Utils {
-	public static final DateTimeFormatter formatoPadrao = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	public static final DateTimeFormatter formatoPadrao = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	public static <T> String iterToString(Iterable<T> iter) {
+		StringBuilder sb = new StringBuilder();
+		boolean primeiraVez = true;
+		for (T a : iter) {
+			if (primeiraVez) {
+				primeiraVez = false;
+			} else {
+				sb.append(';');
+			}
+			sb.append(a.toString());			
+		}
+		return sb.toString();
+	}
 
 	public static List<Veiculo> getVeiculos(Scanner sc) {
 		int nVeiculos = getInt(sc, "Qtd. de veículos a registrar: ");

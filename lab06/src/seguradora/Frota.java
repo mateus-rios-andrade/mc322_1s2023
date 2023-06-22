@@ -17,7 +17,11 @@ public class Frota implements MkString {
 	}
 
 	public Frota(String nome, Iterable<Veiculo> veiculos) {
-		code = genCode();
+		this(genCode(), nome, veiculos);
+	}
+
+	public Frota(String code, String nome, Iterable<Veiculo> veiculos) {
+		this.code = code;
 		this.nome = nome;
 		if (veiculos != null) {
 			for (Veiculo veiculo : veiculos) {

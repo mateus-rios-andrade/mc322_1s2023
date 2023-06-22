@@ -14,23 +14,8 @@ public class ArquivoVeiculo implements Arquivo<Veiculo> {
 	}
 
 	@Override
-	public boolean gerarArquivo() {
-		try {
-			csv = CSV.deDados(
-					objetos.stream()
-							.map(v -> List.of(
-									v.getPlaca(),
-									v.getMarca(),
-									v.getModelo(),
-									Integer.toString(v.getAnoFabricacao())))
-							.toList(),
-					csv.getHeader());
-			csv.gravarEm(nome);
-			return true;
-		} catch (WriteCSVException e) {
-			System.err.println("Erro ao gerar arquivo. Mensagem: " + e.getMessage());
-			return false;
-		}
+	public boolean gerarArquivo(boolean append) {
+		return false;
 	}
 
 	@Override
@@ -45,6 +30,9 @@ public class ArquivoVeiculo implements Arquivo<Veiculo> {
 			System.err.println(e.getMessage());
 		} catch (NumberFormatException e) {
 			System.err.println("Erro ao ler ano de fabricação. Msg: " + e.getMessage());
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("Arquivo " + nome + " mal-formatado.");
+
 		}
 		return null;
 	}
