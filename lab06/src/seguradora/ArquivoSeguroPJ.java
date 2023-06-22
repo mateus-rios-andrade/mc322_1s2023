@@ -29,8 +29,9 @@ public class ArquivoSeguroPJ implements Arquivo<SeguroPJ> {
 									Utils.iterToString(seg.getSinistros().stream().map(Sinistro::getId)::iterator),
 									Utils.iterToString(seg.getCondutores().stream().map(ICondutor::getCpf)::iterator),
 									seg.getCliente().getID(),
-									seg.getFrota().getCode()))
-							.toList(),
+									seg.getFrota().getCode(),
+									Double.toString(seg.calcularValor())
+							)).toList(),
 					csv.getHeader());
 			csv.gravarEm(nome, append);
 			return true;

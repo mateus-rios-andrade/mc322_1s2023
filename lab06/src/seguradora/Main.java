@@ -1,7 +1,6 @@
 package seguradora;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,20 +21,22 @@ public class Main {
 		Seguradora seguradora = seguradoras.get("teste");
 		List<Condutor> condutores = seguradora.lerDados();
 		if (condutores == null) {
-			System.err.println("Algo deu muito errado.");
-		}
-		Cliente cliente = seguradora.getClientes().get(0);
-		Seguro seguro;
-		if (cliente instanceof ClientePF c) {
-			seguro = seguradora.gerarSeguro(c, c.getVeiculos().get(0), List.of(condutores.get(0)), LocalDate.of(2023, 6, 21), LocalDate.of(2024, 6, 21));
+			System.err.println("Erro ao ler dados.");
 		} else {
-			ClientePJ c = (ClientePJ)cliente;
-			seguro = seguradora.gerarSeguro(c, c.getFrotas().get(0), List.of(condutores.get(1)), LocalDate.of(2022, 1, 1), LocalDate.of(2026, 1, 1));
+			Cliente cliente = seguradora.getClientes().get(0);
+			Seguro seguro;
+			if (cliente instanceof ClientePF c) {
+				seguro = seguradora.gerarSeguro(c, c.getVeiculos().get(0), List.of(condutores.get(0)), LocalDate.of(2023, 6, 21), LocalDate.of(2024, 6, 21));
+			} else {
+				ClientePJ c = (ClientePJ)cliente;
+				seguro = seguradora.gerarSeguro(c, c.getFrotas().get(0), List.of(condutores.get(1)), LocalDate.of(2022, 1, 1), LocalDate.of(2026, 1, 1));
+			}
+			seguradora.gerarSinistro(seguro, seguro.getCondutores().get(0), LocalDate.of(2023, 6, 1), "Rua dos Testes 42");
 		}
-		seguradora.gerarSinistro(seguro, seguro.getCondutores().get(0), LocalDate.of(2023, 6, 1), "Rua dos Testes 42");
 		interativo(seguradoras, condutores.stream().collect(Collectors.toMap(Condutor::getCpf, Function.identity(), (x, y) -> x, () -> new HashMap<>())));
 		seguradora.gravarDados();
-		seguradora.getClientes().forEach(System.out::println);
+		seguradora.getSeguros().forEach(System.out::println);
+		seguradora.listarSinistros().forEach(System.out::println);
 	}
 
 	/**

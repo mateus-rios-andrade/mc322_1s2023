@@ -43,8 +43,10 @@ public class ArquivoFrota implements Arquivo<Frota> {
 			csv = CSV.deArquivo(nome, true);
 			objetos = deserializar(csv.getDados());
 			return objetos;
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (ReadCSVException e) {
+			System.err.println(e.getMessage());
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("Uma linha possui menos entradas do que o necessário.");
 		}
 		return null;
 	}

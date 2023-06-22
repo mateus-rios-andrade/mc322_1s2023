@@ -23,9 +23,8 @@ public class ArquivoSinistro implements Arquivo<Sinistro> {
 									Integer.toString(s.getId()),
 									s.getData().format(Utils.formatoPadrao),
 									s.getEndereco(),
-									s.getSeguradora().getNome(),
-									Integer.toString(s.getSeguro().getId()),
-									s.getCondutor().getCpf()
+									s.getCondutor().getCpf(),
+									Integer.toString(s.getSeguro().getId())
 							))
 							.toList(),
 					csv.getHeader());

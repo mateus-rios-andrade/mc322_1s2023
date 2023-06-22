@@ -46,6 +46,8 @@ public class ArquivoClientePJ implements Arquivo<ClientePJ> {
 		} catch (ReadCSVException e) {
 			System.err.println(e.getMessage());
 			return null;
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("Uma linha possui menos entradas do que o necessário.");
 		}
 	}
 

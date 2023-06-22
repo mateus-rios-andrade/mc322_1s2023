@@ -40,9 +40,11 @@ public class ArquivoCondutor implements Arquivo<Condutor> {
 					.toList();
 			return objetos;
 		} catch (DateTimeParseException e) {
-			// TODO: handle exception
+			System.err.println("Data '" + e.getParsedString() + "' formatada incorretamente. ");
 		} catch (ReadCSVException e) {
-			
+			System.err.println(e.getMessage());
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("Uma linha possui menos entradas do que o necessário.");
 		}
 		return null;
 	}

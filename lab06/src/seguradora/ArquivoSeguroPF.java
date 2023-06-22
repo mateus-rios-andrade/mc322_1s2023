@@ -31,7 +31,8 @@ public class ArquivoSeguroPF implements Arquivo<SeguroPF> {
 								Utils.iterToString(seg.getSinistros().stream().map(Sinistro::getId)::iterator),
 								Utils.iterToString(seg.getCondutores().stream().map(ICondutor::getCpf)::iterator),
 								seg.getCliente().getID(),
-								seg.getVeiculo().getPlaca()
+								seg.getVeiculo().getPlaca(),
+								Double.toString(seg.calcularValor())
 							))
 							.toList(),
 					 csv.getHeader());

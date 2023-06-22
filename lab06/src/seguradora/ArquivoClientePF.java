@@ -55,8 +55,10 @@ public class ArquivoClientePF implements Arquivo<ClientePF> {
 			return objetos;
 		} catch (DateTimeParseException e) {
 			System.err.printf("Erro: string %s não representa uma data válida.%n", e.getParsedString());
-			return null;
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("Uma linha possui menos entradas do que o necessário.");
 		}
+		return null;
 	}
 
 	@Override

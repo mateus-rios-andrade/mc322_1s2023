@@ -74,7 +74,7 @@ public class Sinistro implements MkString {
 
 	public String mkString(String prefixo, String sep, String sufixo) {
 		return prefixo + "ID: " + id + sep + "Data: " + data + sep + "Endereço: " + endereco + sep + "Seguradora: "
-				+ seguradora
+				+ seguradora.getNome()
 				+ sep + "Seguro: " + seguro + sep + "ICondutor: " + condutor + sufixo;
 	}
 
